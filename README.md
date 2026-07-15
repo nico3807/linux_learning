@@ -44,8 +44,13 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
   exacte n'est jamais donnée.
 - **Sauvegarde automatique** dans le navigateur (`localStorage`) : on peut
   fermer l'onglet et reprendre plus tard. `reset --confirm` réinitialise tout.
-- À la fin : un **certificat** récapitule le temps de jeu et les indices
-  utilisés.
+- À la fin : un certificat s'affiche dans le terminal, puis une **pop-up
+  demande le nom et le prénom de l'étudiant** et génère un **certificat PDF
+  téléchargeable** (généré côté navigateur avec jsPDF, embarqué dans le
+  dépôt). Première page : le certificat avec les logos de part et d'autre du
+  titre, la date, la durée du parcours et les indices utilisés — suivi de
+  **l'historique complet des commandes saisies** pendant la partie. La
+  commande `certificat` permet de le régénérer à tout moment après la fin.
 
 ### Commandes du jeu (hors Linux)
 
@@ -55,6 +60,7 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
 | `mission` | rappelle la mission en cours |
 | `indice` | un coup de pouce (progressif, jamais la réponse) |
 | `progression` | avancement, temps de jeu, indices utilisés |
+| `certificat` | (fin de jeu) télécharge le certificat de réussite en PDF |
 | `reset --confirm` | recommence le jeu de zéro |
 
 Le terminal gère aussi : **historique** (flèches ↑↓), **complétion Tab**
@@ -86,13 +92,25 @@ node tests/playthrough.js
 ```
 index.html          page unique du jeu
 css/style.css       thème « terminal rétro »
+assets/             logos utilisés sur le certificat PDF
 js/vfs.js           système de fichiers virtuel (arborescence, droits, propriétaires)
 js/commands.js      interpréteur : parsing, pipes, redirections, sudo + toutes les commandes
 js/missions.js      ⭐ les 12 missions : consignes, indices, validation
 js/game.js          moteur : cycle des missions, sauvegarde, certificat
 js/terminal.js      interface navigateur : saisie, historique, Tab, éditeur nano
+js/certificate.js   génération du certificat PDF (logos + historique des commandes)
+js/vendor/          jsPDF (bibliothèque embarquée, licence MIT)
 tests/playthrough.js  partie complète automatisée (Node.js)
 ```
+
+### Logos du certificat
+
+Le certificat PDF utilise deux images placées de part et d'autre du titre :
+
+- `assets/logo_UM_hack26.png` (gauche) — **à remplacer par le logo officiel
+  Université de Montpellier / IUT Béziers** : il suffit d'écraser ce fichier
+  (même nom) dans le dépôt, aucun changement de code n'est nécessaire.
+- `assets/logo_mmi.jpg` (droite) — logo MMI Béziers.
 
 ### Ajouter une mission
 

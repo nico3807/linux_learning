@@ -55,6 +55,27 @@
     </div>
   </div>
 
+  <!-- Pop-up du certificat de fin de jeu -->
+  <div id="certmodal" role="dialog" aria-label="Certificat de réussite">
+    <div id="certmodal-window">
+      <h2>🏆 Certificat de réussite</h2>
+      <p>Félicitations, tu as terminé MMI Linux Quest !<br>
+         Indique ton identité pour générer ton certificat officiel en PDF
+         (il inclut l'historique de toutes tes commandes) :</p>
+      <label for="cert-prenom">Prénom</label>
+      <input id="cert-prenom" type="text" autocomplete="given-name" maxlength="40">
+      <label for="cert-nom">Nom</label>
+      <input id="cert-nom" type="text" autocomplete="family-name" maxlength="40">
+      <p id="cert-error" role="alert"></p>
+      <div id="certmodal-buttons">
+        <button id="cert-generate">📜 Télécharger le certificat PDF</button>
+        <button id="cert-cancel">Plus tard</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/vendor/jspdf.umd.min.js"></script>
+  <script src="js/certificate.js"></script>
   <script src="js/vfs.js"></script>
   <script src="js/missions.js"></script>
   <script src="js/commands.js"></script>

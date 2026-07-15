@@ -45,6 +45,7 @@
     clear,
     openEditor,
     onStateChange: updateHeader,
+    onGameFinished: openCertModal,
   });
 
   function promptText() {
@@ -209,6 +210,66 @@
     if (e.ctrlKey && e.key === 'x') { e.preventDefault(); closeEditor(); }
     if (e.key === 'Escape') { e.preventDefault(); closeEditor(); }
   });
+
+  /* ---------------- Pop-up du certificat PDF ---------------- */
+
+  const certModal = document.getElementById('certmodal');
+  const certPrenom = document.getElementById('cert-prenom');
+  const certNom = document.getElementById('cert-nom');
+  const certError = document.getElementById('cert-error');
+  const certGenerate = document.getElementById('cert-generate');
+  const certCancel = document.getElementById('cert-cancel');
+
+  function openCertModal() {
+    certError.textContent = '';
+    certModal.classList.add('visible');
+    certPrenom.focus();
+  }
+
+  function closeCertModal() {
+    certModal.classList.remove('visible');
+    input.focus();
+  }
+
+  async function generateCertificate() {
+    const prenom = certPrenom.value.trim();
+    const nom = certNom.value.trim();
+    if (!prenom || !nom) {
+      certError.textContent = 'Merci d\'indiquer ton prénom ET ton nom.';
+      (prenom ? certNom : certPrenom).focus();
+      return;
+    }
+    certError.textContent = '';
+    certGenerate.disabled = true;
+    certGenerate.textContent = 'Génération en cours…';
+    try {
+      const res = await Certificate.generate({
+        prenom, nom,
+        stats: game.getStats(),
+        history: game.state.history,
+      });
+      closeCertModal();
+      print(`📜 Certificat PDF généré et téléchargé (${res.pages} page${res.pages > 1 ? 's' : ''}). Bravo ${prenom} !\n`, 'success', true);
+      if (!res.logosOk) {
+        print('⚠️  Les logos n\'ont pas pu être intégrés (ouverture en fichier local ?) — le certificat reste valide.\n', 'hint', true);
+      }
+    } catch (e) {
+      certError.textContent = 'Échec de la génération du PDF : ' + e.message;
+    } finally {
+      certGenerate.disabled = false;
+      certGenerate.textContent = '📜 Télécharger le certificat PDF';
+    }
+  }
+
+  certGenerate.addEventListener('click', generateCertificate);
+  certCancel.addEventListener('click', () => {
+    closeCertModal();
+    print('Tu pourras générer ton certificat à tout moment avec la commande :  certificat\n', 'info', true);
+  });
+  [certPrenom, certNom].forEach(el => el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); generateCertificate(); }
+    if (e.key === 'Escape') { e.preventDefault(); closeCertModal(); }
+  }));
 
   /* ---------------- Démarrage ---------------- */
 

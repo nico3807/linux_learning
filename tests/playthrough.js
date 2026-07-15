@@ -11,12 +11,14 @@ const Game = require('../js/game.js');
 
 let outputLog = [];
 let editorRequest = null;
+let certModalOpened = 0;
 
 const game = new Game.GameEngine({
   print: (text, cls) => outputLog.push(String(text)),
   clear: () => {},
   openEditor: (path, content, writable, user) => { editorRequest = { path, content, writable, user }; },
   onStateChange: () => {},
+  onGameFinished: () => { certModalOpened++; },
 });
 
 let failures = 0;
@@ -44,7 +46,9 @@ game.start();
 atMission(1, 'Le jeu démarre à la mission 1');
 
 console.log('\n— Mission 1 : premiers pas —');
-let out = run('cat README.txt');
+let out = run('certificat');
+assert(out.includes('termine d\'abord'), 'certificat avant la fin : refus pédagogique');
+out = run('cat README.txt');
 assert(out.includes('mission_01.txt'), 'README oriente vers la mission 1');
 out = run('cat missions/mission_01.txt');
 assert(out.includes('MISSION 1'), 'La mission 1 se lit avec cat');
@@ -181,6 +185,13 @@ run('sudo ./scripts/validation_finale.sh');
 out = outputLog.join('');
 assert(out.includes('CERTIFICAT MMI LINUX QUEST'), 'Le certificat final s\'affiche');
 assert(game.finished, 'Le jeu est marqué comme terminé');
+assert(certModalOpened === 1, 'La pop-up du certificat s\'ouvre à la fin du jeu');
+run('certificat');
+assert(certModalOpened === 2, 'La commande « certificat » rouvre la pop-up');
+const stats = game.getStats();
+assert(stats.missionsTotal === 12 && typeof stats.duree === 'string' && stats.date.length > 5,
+  'getStats fournit durée, date et total de missions');
+assert(game.state.history.includes('sudo apt update'), 'L\'historique complet est disponible pour le PDF');
 
 console.log('\n— Commandes transverses —');
 out = run('indice');

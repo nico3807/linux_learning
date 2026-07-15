@@ -155,8 +155,35 @@ Rappels utiles à tout moment :
    ██████████████████████████████████████████████████████
 `, 'success');
       this.ui.print('Le jeu est terminé, mais le terminal reste ouvert : entraîne-toi librement !', 'info');
+      this.ui.print('📜 Pour télécharger ton certificat officiel en PDF : tape  certificat', 'mission');
       this.ui.print('Pour tout recommencer : reset --confirm', 'info');
       this.ui.onStateChange && this.ui.onStateChange();
+      this.ui.onGameFinished && this.ui.onGameFinished();
+    }
+
+    /** Statistiques pour le certificat PDF. */
+    getStats() {
+      const M2 = (typeof MISSIONS !== 'undefined' ? MISSIONS : require('./missions.js'));
+      const mins = Math.round(((this.state.endTime || Date.now()) - this.state.startTime) / 60000);
+      const h = Math.floor(mins / 60), mn = mins % 60;
+      return {
+        duree: h > 0 ? `${h} h ${String(mn).padStart(2, '0')} min` : `${mn} min`,
+        missionsTotal: M2.missions.length,
+        indices: this.state.hintsUsedTotal,
+        date: new Date(this.state.endTime || Date.now())
+          .toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
+      };
+    }
+
+    /** Commande « certificat » : rouvre la fenêtre du certificat. */
+    requestCertificate(ctx) {
+      if (!this.finished) {
+        ctx.sink.line('Le certificat se mérite : termine d\'abord les 12 missions ! 💪', 'error');
+        ctx.sink.line('Tape « progression » pour voir où tu en es.', 'info');
+        return;
+      }
+      if (this.ui.onGameFinished) this.ui.onGameFinished();
+      else ctx.sink.line('(La génération du certificat n\'est disponible que dans le navigateur.)', 'info');
     }
 
     /* ---------------- Indices (jamais la réponse) ---------------- */

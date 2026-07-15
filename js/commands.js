@@ -112,6 +112,12 @@ const Shell = (() => {
       run(ctx) { ctx.game.showProgress(ctx); },
     },
 
+    certificat: {
+      desc: 'télécharge ton certificat de réussite en PDF (à la fin du jeu)',
+      usage: 'certificat',
+      run(ctx) { ctx.game.requestCertificate(ctx); },
+    },
+
     man: {
       desc: 'affiche le manuel d\'une commande',
       usage: 'man <commande>',
