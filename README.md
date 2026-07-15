@@ -1,0 +1,132 @@
+# 🐧 MMI Linux Quest
+
+Un jeu sérieux pour apprendre les commandes principales de **Linux** dans un
+**terminal virtuel**, sur le thème du **BUT MMI** (Métiers du Multimédia et de
+l'Internet).
+
+L'étudiant incarne un étudiant de première année qui découvre le serveur Linux
+de son IUT pour réaliser sa **SAÉ 105 — Produire un site web** : navigation
+dans l'arborescence, manipulation de fichiers, droits, `sudo`, installation
+d'un serveur web Apache, mise en ligne d'une page HTML...
+
+## 🎮 Jouer
+
+Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
+
+- **En ligne** : via GitHub Pages (voir « Mise en production » ci-dessous)
+- **En local** : ouvrir simplement `index.html` dans un navigateur
+
+## 📖 Principe du jeu
+
+- Les **consignes sont des fichiers texte** dans le terminal virtuel : le
+  joueur les affiche avec `cat` (par exemple `cat missions/mission_01.txt`)
+  puis tape les commandes correspondantes.
+- **12 missions progressives** (~3 heures de jeu au total) :
+
+| # | Mission | Notions |
+|---|---------|---------|
+| 1 | Premiers pas | `pwd`, `ls` |
+| 2 | Se déplacer | `cd`, `ls -a`, `cat`, fichiers cachés |
+| 3 | Créer son espace projet | `mkdir`, `touch` |
+| 4 | Ranger ses fichiers | `mv`, `cp`, renommage |
+| 5 | Faire le ménage | `rm`, `rmdir`, `rm -r` |
+| 6 | Écrire dans des fichiers | `echo`, redirections `>` et `>>` |
+| 7 | Chercher | `grep -r`, `find` |
+| 8 | Droits et exécution | `ls -l`, `chmod`, `./script.sh` |
+| 9 | Devenir administrateur | `sudo`, `apt update`, `apt install` |
+| 10 | Serveur web | `systemctl start/status`, `curl` |
+| 11 | Publier sa page | `sudo nano`, HTML dans `/var/www/html` |
+| 12 | Validation finale | révision : `chmod` + `sudo` + exécution |
+
+- **Jamais la réponse, toujours de l'aide** : la commande `indice` donne
+  jusqu'à 3 indices progressifs par mission, les messages d'erreur orientent
+  le joueur, `man <commande>` explique chaque commande — mais la solution
+  exacte n'est jamais donnée.
+- **Sauvegarde automatique** dans le navigateur (`localStorage`) : on peut
+  fermer l'onglet et reprendre plus tard. `reset --confirm` réinitialise tout.
+- À la fin : un **certificat** récapitule le temps de jeu et les indices
+  utilisés.
+
+### Commandes du jeu (hors Linux)
+
+| Commande | Effet |
+|----------|-------|
+| `aide` / `help` | liste des commandes disponibles |
+| `mission` | rappelle la mission en cours |
+| `indice` | un coup de pouce (progressif, jamais la réponse) |
+| `progression` | avancement, temps de jeu, indices utilisés |
+| `reset --confirm` | recommence le jeu de zéro |
+
+Le terminal gère aussi : **historique** (flèches ↑↓), **complétion Tab**
+(commandes et chemins), `Ctrl+L` (effacer), les **pipes** (`cat x | wc -l`)
+et les **redirections** (`>`, `>>`).
+
+## 🚀 Mise en production sur GitHub Pages
+
+Aucune compilation nécessaire. Deux options :
+
+1. **Via GitHub Actions** (recommandé, déjà configuré) : dans
+   *Settings → Pages*, choisir **Source : GitHub Actions**. Le workflow
+   `.github/workflows/deploy-pages.yml` publie le site à chaque push sur
+   `main`.
+2. **Depuis une branche** : dans *Settings → Pages*, choisir
+   **Deploy from a branch** → `main` → `/ (root)`.
+
+## 🧪 Tests
+
+Un test automatique rejoue une partie complète (les 12 missions, plus les cas
+d'erreur pédagogiques) :
+
+```bash
+node tests/playthrough.js
+```
+
+## 🏗️ Architecture (pour faire évoluer le jeu)
+
+```
+index.html          page unique du jeu
+css/style.css       thème « terminal rétro »
+js/vfs.js           système de fichiers virtuel (arborescence, droits, propriétaires)
+js/commands.js      interpréteur : parsing, pipes, redirections, sudo + toutes les commandes
+js/missions.js      ⭐ les 12 missions : consignes, indices, validation
+js/game.js          moteur : cycle des missions, sauvegarde, certificat
+js/terminal.js      interface navigateur : saisie, historique, Tab, éditeur nano
+tests/playthrough.js  partie complète automatisée (Node.js)
+```
+
+### Ajouter une mission
+
+Le jeu est conçu pour être évolutif : tout se passe dans `js/missions.js`.
+Ajouter un objet dans le tableau `missions` avec :
+
+- `titre`, `fichier` (chemin du fichier de consignes dans le jeu), `texte`
+  (les consignes affichées par `cat`) ;
+- `indices` : 3 indices progressifs (guider sans donner la réponse !) ;
+- `setup(ctx)` : prépare les fichiers nécessaires (`ctx.fs`) au démarrage de
+  la mission ;
+- `check(ctx)` : retourne `true` quand la mission est réussie (appelée après
+  chaque commande — `ctx.fs`, `ctx.state`, `ctx.cwd` disponibles) ;
+- `bravo` : message de félicitations.
+
+### Ajouter une commande Linux
+
+Dans `js/commands.js`, ajouter une entrée à `COMMANDS` :
+
+```js
+ma_commande: {
+  desc: 'description courte (affichée par « aide »)',
+  usage: 'ma_commande <argument>',
+  man: 'texte détaillé pour « man ma_commande »',
+  run(ctx, args) { ctx.sink.line('résultat'); },
+},
+```
+
+Puis compléter `tests/playthrough.js` et vérifier que tout reste vert.
+
+## 📚 Contexte pédagogique
+
+Jeu conçu pour la ressource « Système d'information » / culture numérique du
+**BUT MMI** : il couvre les commandes essentielles attendues d'un étudiant
+(navigation, fichiers, droits, paquets, services) en les mettant en scène
+dans un scénario de production web réaliste, du premier `pwd` jusqu'au
+déploiement d'une page sur Apache.
