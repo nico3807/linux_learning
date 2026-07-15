@@ -158,6 +158,23 @@ body {
 
 #hintbar b { color: var(--cyan); font-weight: normal; }
 
+#hint-cert {
+  cursor: pointer;
+  border: 1px solid #2a3648;
+  border-radius: 6px;
+  padding: 2px 8px;
+  background: #121a24;
+  transition: border-color .15s, color .15s;
+}
+
+#hint-cert:hover, #hint-cert:focus-visible {
+  border-color: var(--yellow);
+  color: var(--fg);
+  outline: none;
+}
+
+#hint-cert b { color: var(--yellow); }
+
 /* ---------------- Éditeur nano ---------------- */
 
 #editor {

@@ -39,6 +39,9 @@
       <span><b>progression</b> : avancement</span>
       <span><b>Tab</b> : complétion</span>
       <span><b>↑↓</b> : historique</span>
+      <span id="hint-cert" role="button" tabindex="0"
+            title="Télécharger le certificat PDF — avant la fin du jeu, il portera la mention « Non terminé »">
+        📜 <b>certificat</b> : télécharger le PDF</span>
     </footer>
 
   </div>
@@ -58,10 +61,9 @@
   <!-- Pop-up du certificat de fin de jeu -->
   <div id="certmodal" role="dialog" aria-label="Certificat de réussite">
     <div id="certmodal-window">
-      <h2>🏆 Certificat de réussite</h2>
-      <p>Félicitations, tu as terminé MMI Linux Quest !<br>
-         Indique ton identité pour générer ton certificat officiel en PDF
-         (il inclut l'historique de toutes tes commandes) :</p>
+      <h2 id="certmodal-title">🏆 Certificat de réussite</h2>
+      <p id="certmodal-desc">Indique ton identité pour générer ton certificat
+         en PDF (il inclut l'historique de toutes tes commandes) :</p>
       <label for="cert-prenom">Prénom</label>
       <input id="cert-prenom" type="text" autocomplete="given-name" maxlength="40">
       <label for="cert-nom">Nom</label>

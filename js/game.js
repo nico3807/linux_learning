@@ -169,21 +169,31 @@ Rappels utiles à tout moment :
       return {
         duree: h > 0 ? `${h} h ${String(mn).padStart(2, '0')} min` : `${mn} min`,
         missionsTotal: M2.missions.length,
+        missionsDone: this.finished ? M2.missions.length : this.state.missionIndex,
+        finished: this.finished,
         indices: this.state.hintsUsedTotal,
         date: new Date(this.state.endTime || Date.now())
           .toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }),
       };
     }
 
-    /** Commande « certificat » : rouvre la fenêtre du certificat. */
+    /**
+     * Commande « certificat » : ouvre la fenêtre du certificat.
+     * Disponible à tout moment — avant la fin, le document portera
+     * la mention « NON TERMINÉ » (utile si la séance s'achève avant
+     * la fin du parcours).
+     */
     requestCertificate(ctx) {
-      if (!this.finished) {
-        ctx.sink.line('Le certificat se mérite : termine d\'abord les 12 missions ! 💪', 'error');
-        ctx.sink.line('Tape « progression » pour voir où tu en es.', 'info');
+      if (!this.ui.onGameFinished) {
+        ctx.sink && ctx.sink.line('(La génération du certificat n\'est disponible que dans le navigateur.)', 'info');
         return;
       }
-      if (this.ui.onGameFinished) this.ui.onGameFinished();
-      else ctx.sink.line('(La génération du certificat n\'est disponible que dans le navigateur.)', 'info');
+      if (!this.finished && ctx.sink) {
+        const stats = this.getStats();
+        ctx.sink.line(`Parcours en cours (${stats.missionsDone}/${stats.missionsTotal} missions) : le document portera la mention « NON TERMINÉ ».`, 'info');
+        ctx.sink.line('Tu pourras rééditer un certificat complet quand tu auras tout terminé. 💪', 'info');
+      }
+      this.ui.onGameFinished();
     }
 
     /* ---------------- Indices (jamais la réponse) ---------------- */

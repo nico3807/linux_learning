@@ -43,24 +43,47 @@ const Certificate = (() => {
 
   /**
    * Génère et télécharge le certificat.
-   * opts = { prenom, nom, stats: { duree, missionsTotal, indices, date }, history: [...] }
+   * opts = {
+   *   prenom, nom,
+   *   stats: { duree, missionsTotal, missionsDone, indices, date, finished },
+   *   history: [...]
+   * }
+   * Si le parcours n'est pas terminé, le document porte la mention
+   * « NON TERMINÉ » (filigrane + statut).
    */
   async function generate(opts) {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const W = 210, H = 297;
     const MARGIN = 14;
+    const finished = !!opts.stats.finished;
 
     const prenom = sanitize(opts.prenom);
     const nom = sanitize(opts.nom).toUpperCase();
 
     const [logoLeft, logoRight] = await Promise.all([loadImage(LOGO_LEFT), loadImage(LOGO_RIGHT)]);
 
+    /* ---------- Filigrane « NON TERMINÉ » (avant le contenu) ---------- */
+    if (!finished) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(52);
+      try {
+        doc.saveGraphicsState();
+        doc.setGState(new doc.GState({ opacity: 0.13 }));
+        doc.setTextColor(200, 40, 40);
+        doc.text('NON TERMINÉ', W / 2, H / 2 + 30, { angle: 45, align: 'center' });
+        doc.restoreGraphicsState();
+      } catch {
+        doc.setTextColor(246, 214, 214);
+        doc.text('NON TERMINÉ', W / 2, H / 2 + 30, { angle: 45, align: 'center' });
+      }
+    }
+
     /* ---------- Cadre décoratif ---------- */
     doc.setDrawColor(123, 92, 255);
     doc.setLineWidth(1.2);
     doc.roundedRect(7, 7, W - 14, H - 14, 4, 4);
-    doc.setDrawColor(87, 211, 100);
+    doc.setDrawColor(finished ? 87 : 255, finished ? 211 : 160, finished ? 100 : 100);
     doc.setLineWidth(0.4);
     doc.roundedRect(9.5, 9.5, W - 19, H - 19, 3, 3);
 
@@ -79,7 +102,7 @@ const Certificate = (() => {
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(30, 30, 60);
     doc.setFontSize(19);
-    doc.text('CERTIFICAT DE RÉUSSITE', W / 2, logoTop + 9, { align: 'center' });
+    doc.text(finished ? 'CERTIFICAT DE RÉUSSITE' : 'ATTESTATION DE PARCOURS', W / 2, logoTop + 9, { align: 'center' });
     doc.setFontSize(12);
     doc.setTextColor(123, 92, 255);
     doc.text('MMI Linux Quest', W / 2, logoTop + 16, { align: 'center' });
@@ -106,18 +129,24 @@ const Certificate = (() => {
     doc.setFontSize(11);
     doc.setTextColor(60, 60, 80);
     const intro = doc.splitTextToSize(
-      'a terminé avec succès les 12 missions du jeu sérieux « MMI Linux Quest » : '
-      + 'navigation dans l\'arborescence, gestion de fichiers et de répertoires, droits et permissions, '
-      + 'administration (sudo, apt), installation et démarrage du serveur web Apache, '
-      + 'et publication d\'une page web.', W - 2 * MARGIN - 20);
+      finished
+        ? 'a terminé avec succès les 12 missions du jeu sérieux « MMI Linux Quest » : '
+          + 'navigation dans l\'arborescence, gestion de fichiers et de répertoires, droits et permissions, '
+          + 'administration (sudo, apt), installation et démarrage du serveur web Apache, '
+          + 'et publication d\'une page web.'
+        : `a suivi le jeu sérieux « MMI Linux Quest » (apprentissage du terminal Linux) et a réussi `
+          + `${opts.stats.missionsDone} mission${opts.stats.missionsDone > 1 ? 's' : ''} sur ${opts.stats.missionsTotal} `
+          + `à la date d'édition de ce document. Le parcours pourra être repris et complété lors d'une prochaine séance.`,
+      W - 2 * MARGIN - 20);
     doc.text(intro, W / 2, y, { align: 'center' });
     y += intro.length * 5 + 8;
 
     /* ---------- Statistiques ---------- */
     const stats = [
-      ['Date', opts.stats.date],
+      ['Statut', finished ? 'Terminé' : 'NON TERMINÉ'],
+      ['Date d\'édition', opts.stats.date],
       ['Durée du parcours', opts.stats.duree],
-      ['Missions réussies', `${opts.stats.missionsTotal} / ${opts.stats.missionsTotal}`],
+      ['Missions réussies', `${opts.stats.missionsDone} / ${opts.stats.missionsTotal}`],
       ['Indices utilisés', String(opts.stats.indices)],
       ['Commandes saisies', String(opts.history.length)],
     ];
@@ -126,8 +155,9 @@ const Certificate = (() => {
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(80, 80, 110);
       doc.text(label + ' :', W / 2 - 4, y, { align: 'right' });
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(40, 40, 60);
+      doc.setFont('helvetica', label === 'Statut' ? 'bold' : 'normal');
+      if (label === 'Statut') doc.setTextColor(finished ? 30 : 200, finished ? 140 : 40, finished ? 60 : 40);
+      else doc.setTextColor(40, 40, 60);
       doc.text(sanitize(value), W / 2 + 2, y);
       y += 6.5;
     }
@@ -171,13 +201,14 @@ const Certificate = (() => {
       doc.setFont('helvetica', 'italic');
       doc.setFontSize(8);
       doc.setTextColor(140, 140, 160);
-      doc.text('MMI Linux Quest — certificat généré automatiquement à la fin du jeu', MARGIN, H - 9);
+      doc.text(`MMI Linux Quest — document généré automatiquement par le jeu${finished ? '' : ' (parcours en cours)'}`, MARGIN, H - 9);
       doc.text(`page ${p} / ${pages}`, W - MARGIN, H - 9, { align: 'right' });
     }
 
     const slug = (s) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'etudiant';
-    doc.save(`certificat_mmi_linux_quest_${slug(opts.nom)}_${slug(opts.prenom)}.pdf`);
+    const suffix = finished ? '' : '_non_termine';
+    doc.save(`certificat_mmi_linux_quest_${slug(opts.nom)}_${slug(opts.prenom)}${suffix}.pdf`);
     return { pages, logosOk: !!(logoLeft && logoRight) };
   }
 

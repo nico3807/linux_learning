@@ -214,6 +214,8 @@
   /* ---------------- Pop-up du certificat PDF ---------------- */
 
   const certModal = document.getElementById('certmodal');
+  const certTitle = document.getElementById('certmodal-title');
+  const certDesc = document.getElementById('certmodal-desc');
   const certPrenom = document.getElementById('cert-prenom');
   const certNom = document.getElementById('cert-nom');
   const certError = document.getElementById('cert-error');
@@ -222,6 +224,19 @@
 
   function openCertModal() {
     certError.textContent = '';
+    if (game.finished) {
+      certTitle.textContent = '🏆 Certificat de réussite';
+      certDesc.innerHTML = 'Félicitations, tu as terminé MMI Linux Quest !<br>'
+        + 'Indique ton identité pour générer ton certificat officiel en PDF '
+        + '(il inclut l\'historique de toutes tes commandes) :';
+    } else {
+      const s = game.getStats();
+      certTitle.textContent = '📜 Attestation de parcours';
+      certDesc.innerHTML = `Séance terminée avant la fin du jeu ? Pas de souci !<br>`
+        + `Le document PDF portera la mention <b>« NON TERMINÉ »</b> `
+        + `(${s.missionsDone}/${s.missionsTotal} missions réussies) et inclura `
+        + `l'historique de tes commandes. Indique ton identité :`;
+    }
     certModal.classList.add('visible');
     certPrenom.focus();
   }
@@ -249,7 +264,8 @@
         history: game.state.history,
       });
       closeCertModal();
-      print(`📜 Certificat PDF généré et téléchargé (${res.pages} page${res.pages > 1 ? 's' : ''}). Bravo ${prenom} !\n`, 'success', true);
+      const mention = game.finished ? `Bravo ${prenom} !` : `(mention « Non terminé » — reviens le compléter !)`;
+      print(`📜 Certificat PDF généré et téléchargé (${res.pages} page${res.pages > 1 ? 's' : ''}). ${mention}\n`, 'success', true);
       if (!res.logosOk) {
         print('⚠️  Les logos n\'ont pas pu être intégrés (ouverture en fichier local ?) — le certificat reste valide.\n', 'hint', true);
       }
@@ -264,7 +280,14 @@
   certGenerate.addEventListener('click', generateCertificate);
   certCancel.addEventListener('click', () => {
     closeCertModal();
-    print('Tu pourras générer ton certificat à tout moment avec la commande :  certificat\n', 'info', true);
+    print('Tu pourras générer ton certificat à tout moment avec la commande « certificat »\nou le bouton 📜 de la barre du bas.\n', 'info', true);
+  });
+
+  /* Bouton « certificat » de la barre du bas : disponible à tout moment */
+  const hintCert = document.getElementById('hint-cert');
+  hintCert.addEventListener('click', openCertModal);
+  hintCert.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCertModal(); }
   });
   [certPrenom, certNom].forEach(el => el.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); generateCertificate(); }

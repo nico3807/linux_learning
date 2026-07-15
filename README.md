@@ -51,6 +51,13 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
   titre, la date, la durée du parcours et les indices utilisés — suivi de
   **l'historique complet des commandes saisies** pendant la partie. La
   commande `certificat` permet de le régénérer à tout moment après la fin.
+- **Séance finie avant la fin du jeu ?** Le certificat peut être édité **à
+  tout moment** via le bouton « 📜 certificat » de la barre du bas (ou la
+  commande `certificat`) : le document devient une « Attestation de
+  parcours » portant la mention **« NON TERMINÉ »** (filigrane + statut),
+  avec le nombre de missions réussies (ex. 7/12) et l'historique des
+  commandes déjà saisies. L'étudiant garde ainsi une trace de sa séance et
+  pourra reprendre sa partie plus tard (sauvegarde automatique).
 
 ### Commandes du jeu (hors Linux)
 
@@ -60,7 +67,7 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
 | `mission` | rappelle la mission en cours |
 | `indice` | un coup de pouce (progressif, jamais la réponse) |
 | `progression` | avancement, temps de jeu, indices utilisés |
-| `certificat` | (fin de jeu) télécharge le certificat de réussite en PDF |
+| `certificat` | télécharge le certificat PDF (mention « Non terminé » avant la fin) |
 | `reset --confirm` | recommence le jeu de zéro |
 
 Le terminal gère aussi : **historique** (flèches ↑↓), **complétion Tab**

@@ -113,8 +113,9 @@ const Shell = (() => {
     },
 
     certificat: {
-      desc: 'télécharge ton certificat de réussite en PDF (à la fin du jeu)',
+      desc: 'télécharge ton certificat en PDF (mention « Non terminé » avant la fin)',
       usage: 'certificat',
+      man: 'Génère le certificat PDF du parcours. Disponible à tout moment :\n    avant la fin des 12 missions, le document porte la mention\n    « NON TERMINÉ » (pratique si la séance se termine avant le jeu !).',
       run(ctx) { ctx.game.requestCertificate(ctx); },
     },
 
