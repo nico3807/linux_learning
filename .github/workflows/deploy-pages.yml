@@ -4,7 +4,7 @@ name: Déployer sur GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, claude/linux-learning-game-ltxywc]
   workflow_dispatch:
 
 permissions:
