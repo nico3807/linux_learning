@@ -10,8 +10,15 @@ const Game = (() => {
   const M = (typeof MISSIONS !== 'undefined' ? MISSIONS : require('./missions.js'));
   const { HOME } = V;
 
-  /* v2 : passage de 12 à 18 missions (les sauvegardes v1 ne sont plus compatibles) */
-  const SAVE_KEY = 'mmi-linux-quest-v2';
+  /* v3 : sessions nominatives — une sauvegarde par étudiant sur le poste */
+  const SAVE_PREFIX = 'mmi-linux-quest-v3';
+  const REGISTRY_KEY = `${SAVE_PREFIX}:etudiants`;
+
+  /** Identifiant technique à partir d'un nom (accents/espaces retirés). */
+  function slug(s) {
+    return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'x';
+  }
 
   class GameEngine {
     /**
@@ -26,13 +33,66 @@ const Game = (() => {
       this.cwd = HOME;
       this.state = null;
       this.finished = false;
+      this.player = null; // { prenom, nom } — demandé en début de session
     }
 
-    /* ---------------- Initialisation ---------------- */
+    /* ---------------- Sessions nominatives ---------------- */
 
-    start() {
-      if (!this.loadSave()) this.newGame();
+    /** Liste des étudiants ayant une partie enregistrée sur ce poste. */
+    listPlayers() {
+      try {
+        const arr = JSON.parse(this.storage.get(REGISTRY_KEY) || '[]');
+        return Array.isArray(arr) ? arr : [];
+      } catch { return []; }
+    }
+
+    playerId() { return `${slug(this.player.nom)}_${slug(this.player.prenom)}`; }
+
+    saveKey() { return `${SAVE_PREFIX}:save:${this.playerId()}`; }
+
+    /**
+     * Démarre la session d'un étudiant : reprend sa sauvegarde si elle
+     * existe sur ce poste, sinon crée une nouvelle partie.
+     * Retourne true si une partie a été reprise.
+     */
+    startForPlayer(prenom, nom) {
+      this.player = { prenom: String(prenom).trim(), nom: String(nom).trim() };
+      const resumed = this.loadSave();
+      if (!resumed) this.newGame();
+      this.updateRegistry();
       this.ui.onStateChange && this.ui.onStateChange();
+      return resumed;
+    }
+
+    /** Met à jour l'annuaire des parties du poste (pour l'écran d'accueil). */
+    updateRegistry() {
+      if (!this.player) return;
+      try {
+        const M2 = (typeof MISSIONS !== 'undefined' ? MISSIONS : require('./missions.js'));
+        const players = this.listPlayers().filter(p => p.id !== this.playerId());
+        players.unshift({
+          id: this.playerId(),
+          prenom: this.player.prenom,
+          nom: this.player.nom,
+          missionsDone: this.finished ? M2.missions.length : this.state.missionIndex,
+          missionsTotal: M2.missions.length,
+          finished: this.finished,
+          lastPlayed: Date.now(),
+        });
+        this.storage.set(REGISTRY_KEY, JSON.stringify(players));
+      } catch { /* stockage indisponible */ }
+    }
+
+    /** Fin de session : sauvegarde et retour à l'écran d'identification. */
+    logoutRequest(ctx) {
+      this.save();
+      if (ctx && ctx.sink) {
+        ctx.sink.line(`Session de ${this.player.prenom} sauvegardée sur ce poste. À bientôt ! 👋`, 'success');
+      }
+      if (this.ui.onLogout) this.ui.onLogout();
+      else if (ctx && ctx.sink) {
+        ctx.sink.line('(Le changement d\'étudiant n\'est disponible que dans le navigateur.)', 'info');
+      }
     }
 
     newGame() {
@@ -264,9 +324,10 @@ Rappels utiles à tout moment :
     }
 
     resetGame() {
-      this.storage.remove(SAVE_KEY);
-      this.ui.print('Jeu réinitialisé. Bonne chance pour cette nouvelle partie ! 🍀', 'info');
+      this.storage.remove(this.saveKey());
+      this.ui.print(`Partie de ${this.player.prenom} réinitialisée. Bonne chance pour cette nouvelle partie ! 🍀`, 'info');
       this.newGame();
+      this.updateRegistry();
       this.ui.clear && this.ui.clear();
       this.printWelcome();
       this.ui.onStateChange && this.ui.onStateChange();
@@ -301,7 +362,8 @@ Rappels utiles à tout moment :
 |_|  |_|_|  |_|___| |____||_|_||_|\\_,_/_\\_\\    \\__\\_\\\\_,_\\___/__/\\__|
 `, 'logo');
       this.ui.print('Bienvenue sur le serveur d\'entraînement Linux du BUT MMI ! 🐧', 'info');
-      this.ui.print('Session ouverte : etudiant@serveur-mmi', 'info');
+      const who = this.player ? ` — ${this.player.prenom} ${this.player.nom.toUpperCase()}` : '';
+      this.ui.print(`Session ouverte : etudiant@serveur-mmi${who}`, 'info');
       this.ui.print('', null);
       this.ui.print('Pour commencer, lis le fichier d\'accueil :  cat README.txt', 'mission');
       this.ui.print('', null);
@@ -310,8 +372,10 @@ Rappels utiles à tout moment :
     /* ---------------- Sauvegarde ---------------- */
 
     save() {
+      if (!this.player) return;
       try {
-        this.storage.set(SAVE_KEY, JSON.stringify({
+        this.storage.set(this.saveKey(), JSON.stringify({
+          player: this.player,
           fs: this.fs.toJSON(),
           cwd: this.cwd,
           finished: this.finished,
@@ -321,17 +385,19 @@ Rappels utiles à tout moment :
             catted: [...this.state.catted],
           },
         }));
+        this.updateRegistry();
       } catch { /* stockage indisponible : le jeu reste jouable sans sauvegarde */ }
     }
 
     loadSave() {
       try {
-        const raw = this.storage.get(SAVE_KEY);
+        const raw = this.storage.get(this.saveKey());
         if (!raw) return false;
         const data = JSON.parse(raw);
         this.fs = V.FileSystem.fromJSON(data.fs);
         this.cwd = data.cwd || HOME;
         this.finished = !!data.finished;
+        if (data.player) this.player = data.player;
         this.state = {
           ...data.state,
           used: new Set(data.state.used),
@@ -354,7 +420,7 @@ Rappels utiles à tout moment :
     return { get: k => mem[k] || null, set: (k, v) => { mem[k] = v; }, remove: k => { delete mem[k]; } };
   }
 
-  return { GameEngine, SAVE_KEY };
+  return { GameEngine, SAVE_PREFIX, REGISTRY_KEY };
 })();
 
 if (typeof module !== 'undefined') module.exports = Game;

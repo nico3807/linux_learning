@@ -679,6 +679,25 @@ const Shell = (() => {
       },
     },
 
+    exit: {
+      desc: 'termine ta session (sauvegardée) et change d\'étudiant',
+      usage: 'exit',
+      man: 'Ferme la session en cours après l\'avoir sauvegardée sur ce poste,\n    et affiche l\'écran d\'identification pour l\'étudiant suivant.\n    Synonymes : logout, deconnexion.',
+      run(ctx) { ctx.game.logoutRequest(ctx); },
+    },
+
+    logout: {
+      desc: 'synonyme de « exit »',
+      usage: 'logout',
+      run(ctx) { ctx.game.logoutRequest(ctx); },
+    },
+
+    deconnexion: {
+      desc: 'synonyme de « exit »',
+      usage: 'deconnexion',
+      run(ctx) { ctx.game.logoutRequest(ctx); },
+    },
+
     reset: {
       desc: 'réinitialise complètement le jeu (progression perdue !)',
       usage: 'reset --confirm',

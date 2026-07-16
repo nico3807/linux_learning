@@ -19,6 +19,7 @@
         <span id="mission-label">Chargement…</span>
         <div id="progress-track"><div id="progress-bar"></div></div>
       </div>
+      <div id="student-label" title="Étudiant de la session en cours"></div>
       <div id="timer">⏱ 0:00</div>
     </header>
 
@@ -42,6 +43,9 @@
       <span id="hint-cert" role="button" tabindex="0"
             title="Télécharger le certificat PDF — avant la fin du jeu, il portera la mention « Non terminé »">
         📜 <b>certificat</b> : télécharger le PDF</span>
+      <span id="hint-logout" role="button" tabindex="0"
+            title="Sauvegarde ta session et affiche l'écran d'identification pour l'étudiant suivant">
+        👤 <b>changer</b> d'étudiant</span>
     </footer>
 
   </div>
@@ -58,16 +62,34 @@
     </div>
   </div>
 
+  <!-- Écran d'identification (début de session) -->
+  <div id="loginmodal" role="dialog" aria-label="Identification de l'étudiant">
+    <div id="loginmodal-window">
+      <h2>🐧 MMI Linux Quest</h2>
+      <p>Identifie-toi pour démarrer <b>ta</b> session sur ce poste.<br>
+         Ta progression sera enregistrée à ton nom : plusieurs étudiants
+         peuvent jouer sur le même ordinateur.</p>
+      <label for="login-prenom">Prénom</label>
+      <input id="login-prenom" type="text" autocomplete="off" maxlength="40">
+      <label for="login-nom">Nom</label>
+      <input id="login-nom" type="text" autocomplete="off" maxlength="40">
+      <p id="login-error" role="alert"></p>
+      <div id="loginmodal-buttons">
+        <button id="login-start">▶ Démarrer la session</button>
+      </div>
+      <div id="login-sessions" hidden>
+        <p id="login-sessions-title">Parties déjà enregistrées sur ce poste — clique pour reprendre :</p>
+        <div id="login-list"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Pop-up du certificat de fin de jeu -->
   <div id="certmodal" role="dialog" aria-label="Certificat de réussite">
     <div id="certmodal-window">
       <h2 id="certmodal-title">🏆 Certificat de réussite</h2>
-      <p id="certmodal-desc">Indique ton identité pour générer ton certificat
-         en PDF (il inclut l'historique de toutes tes commandes) :</p>
-      <label for="cert-prenom">Prénom</label>
-      <input id="cert-prenom" type="text" autocomplete="given-name" maxlength="40">
-      <label for="cert-nom">Nom</label>
-      <input id="cert-nom" type="text" autocomplete="family-name" maxlength="40">
+      <p id="certmodal-desc"></p>
+      <p id="cert-identity"></p>
       <p id="cert-error" role="alert"></p>
       <div id="certmodal-buttons">
         <button id="cert-generate">📜 Télécharger le certificat PDF</button>

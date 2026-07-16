@@ -48,13 +48,20 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
   jusqu'à 3 indices progressifs par mission, les messages d'erreur orientent
   le joueur, `man <commande>` explique chaque commande — mais la solution
   exacte n'est jamais donnée.
-- **Sauvegarde automatique** dans le navigateur (`localStorage`) : on peut
-  fermer l'onglet et reprendre plus tard. `reset --confirm` réinitialise tout.
-- À la fin : un certificat s'affiche dans le terminal, puis une **pop-up
-  demande le nom et le prénom de l'étudiant** et génère un **certificat PDF
-  téléchargeable** (généré côté navigateur avec jsPDF, embarqué dans le
-  dépôt). Première page : le certificat avec les logos de part et d'autre du
-  titre, la date, la durée du parcours et les indices utilisés — suivi de
+- **Identification en début de session** : l'étudiant saisit son prénom et
+  son nom au démarrage. Sa partie est **enregistrée à son nom** dans le
+  navigateur (`localStorage`) : **plusieurs étudiants peuvent se succéder
+  sur le même poste**, chacun retrouve sa propre progression. L'écran
+  d'accueil liste les parties déjà présentes sur le poste (reprise en un
+  clic), et le bouton « 👤 changer d'étudiant » (ou les commandes `exit` /
+  `logout` / `deconnexion`) sauvegarde la session et rend la main à
+  l'étudiant suivant. `reset --confirm` réinitialise uniquement la partie
+  de l'étudiant connecté.
+- À la fin : un certificat s'affiche dans le terminal, puis une pop-up
+  propose de générer un **certificat PDF téléchargeable au nom de
+  l'étudiant identifié** (généré côté navigateur avec jsPDF, embarqué dans
+  le dépôt). Première page : le certificat avec les logos de part et d'autre
+  du titre, la date, la durée du parcours et les indices utilisés — suivi de
   **l'historique complet des commandes saisies** pendant la partie. La
   commande `certificat` permet de le régénérer à tout moment après la fin.
 - **Séance finie avant la fin du jeu ?** Le certificat peut être édité **à
@@ -74,7 +81,8 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
 | `indice` | un coup de pouce (progressif, jamais la réponse) |
 | `progression` | avancement, temps de jeu, indices utilisés |
 | `certificat` | télécharge le certificat PDF (mention « Non terminé » avant la fin) |
-| `reset --confirm` | recommence le jeu de zéro |
+| `exit` / `logout` / `deconnexion` | sauvegarde la session et change d'étudiant |
+| `reset --confirm` | recommence la partie de l'étudiant connecté |
 
 Le terminal gère aussi : **historique** (flèches ↑↓), **complétion Tab**
 (commandes et chemins), `Ctrl+L` (effacer), les **pipes** (`cat x | wc -l`)

@@ -10,10 +10,17 @@
 - **Public** : BUT MMI 1re année (aucun prérequis Linux).
 - **Durée** : 3 à 4 h — découpable en 2 séances de 2 h (voir ci-dessous).
 - **Matériel** : un navigateur par étudiant. Rien à installer.
-- **Sauvegarde** : automatique dans le navigateur (`localStorage`). La
-  partie reprend au même endroit **sur le même poste et le même
-  navigateur**. En salle machine avec profils réinitialisés, prévoir de
-  finir sur le même poste, ou faire éditer l'attestation en fin de séance.
+- **Identification** : chaque étudiant saisit **prénom + nom en début de
+  session**. Sa partie est enregistrée à son nom sur le poste : plusieurs
+  étudiants (TP en demi-groupes, postes partagés) peuvent se succéder sur
+  le même ordinateur sans se marcher dessus. L'écran d'accueil liste les
+  parties du poste avec leur avancement : l'étudiant clique sur son nom
+  pour reprendre. En fin de passage : bouton « 👤 changer d'étudiant » ou
+  commande `exit`.
+- **Sauvegarde** : automatique et nominative dans le navigateur
+  (`localStorage`). La partie reprend au même endroit **sur le même poste
+  et le même navigateur** (un profil réseau/nettoyage des postes efface les
+  sauvegardes : faire éditer l'attestation en fin de séance par précaution).
 - **Traçabilité** : à tout moment, le bouton « 📜 certificat » (barre du
   bas) génère un PDF : « Attestation de parcours — NON TERMINÉ » en cours
   de jeu, « Certificat de réussite » après la mission 18. Le PDF liste
@@ -198,8 +205,11 @@ sudo ./scripts/validation_finale.sh
 - Le nombre d'indices utilisés figure sur le certificat : il peut servir
   de critère d'autonomie (sans le pénaliser trop — demander de l'aide est
   aussi une compétence).
-- `reset --confirm` efface tout : à connaître, à ne pas laisser traîner
-  sur l'écran d'un voisin farceur.
+- `reset --confirm` efface la partie de l'étudiant **connecté** (pas
+  celles des autres) : à connaître, à ne pas laisser traîner sur l'écran
+  d'un voisin farceur.
+- Le certificat PDF est établi au nom saisi à l'identification : faire
+  vérifier l'orthographe au démarrage (elle figure sur le document remis).
 
 ## Personnalisation rapide
 

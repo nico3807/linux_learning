@@ -46,6 +46,7 @@
     openEditor,
     onStateChange: updateHeader,
     onGameFinished: openCertModal,
+    onLogout: showLogin,
   });
 
   function promptText() {
@@ -53,7 +54,10 @@
     return `etudiant@serveur-mmi:${p}$ `;
   }
 
+  const studentLabel = document.getElementById('student-label');
+
   function updateHeader() {
+    if (!game.state) return;
     const total = MISSIONS.missions.length;
     const done = game.finished ? total : game.state.missionIndex;
     const m = game.currentMission();
@@ -62,6 +66,9 @@
       : `Mission ${m.id}/${total} — ${m.titre}`;
     progressBar.style.width = Math.round((done / total) * 100) + '%';
     promptEl.textContent = promptText();
+    studentLabel.textContent = game.player
+      ? `👤 ${game.player.prenom} ${game.player.nom.toUpperCase()}`
+      : '';
   }
 
   function tickTimer() {
@@ -216,29 +223,29 @@
   const certModal = document.getElementById('certmodal');
   const certTitle = document.getElementById('certmodal-title');
   const certDesc = document.getElementById('certmodal-desc');
-  const certPrenom = document.getElementById('cert-prenom');
-  const certNom = document.getElementById('cert-nom');
+  const certIdentity = document.getElementById('cert-identity');
   const certError = document.getElementById('cert-error');
   const certGenerate = document.getElementById('cert-generate');
   const certCancel = document.getElementById('cert-cancel');
 
   function openCertModal() {
     certError.textContent = '';
+    certIdentity.textContent = `👤 ${game.player.prenom} ${game.player.nom.toUpperCase()}`;
     if (game.finished) {
       certTitle.textContent = '🏆 Certificat de réussite';
       certDesc.innerHTML = 'Félicitations, tu as terminé MMI Linux Quest !<br>'
-        + 'Indique ton identité pour générer ton certificat officiel en PDF '
-        + '(il inclut l\'historique de toutes tes commandes) :';
+        + 'Ton certificat officiel en PDF (avec l\'historique de toutes tes '
+        + 'commandes) sera établi au nom de :';
     } else {
       const s = game.getStats();
       certTitle.textContent = '📜 Attestation de parcours';
       certDesc.innerHTML = `Séance terminée avant la fin du jeu ? Pas de souci !<br>`
         + `Le document PDF portera la mention <b>« NON TERMINÉ »</b> `
         + `(${s.missionsDone}/${s.missionsTotal} missions réussies) et inclura `
-        + `l'historique de tes commandes. Indique ton identité :`;
+        + `l'historique de tes commandes. Il sera établi au nom de :`;
     }
     certModal.classList.add('visible');
-    certPrenom.focus();
+    certGenerate.focus();
   }
 
   function closeCertModal() {
@@ -247,13 +254,7 @@
   }
 
   async function generateCertificate() {
-    const prenom = certPrenom.value.trim();
-    const nom = certNom.value.trim();
-    if (!prenom || !nom) {
-      certError.textContent = 'Merci d\'indiquer ton prénom ET ton nom.';
-      (prenom ? certNom : certPrenom).focus();
-      return;
-    }
+    const { prenom, nom } = game.player;
     certError.textContent = '';
     certGenerate.disabled = true;
     certGenerate.textContent = 'Génération en cours…';
@@ -289,22 +290,84 @@
   hintCert.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCertModal(); }
   });
-  [certPrenom, certNom].forEach(el => el.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); generateCertificate(); }
-    if (e.key === 'Escape') { e.preventDefault(); closeCertModal(); }
+
+  /* ---------------- Écran d'identification ---------------- */
+
+  const loginModal = document.getElementById('loginmodal');
+  const loginPrenom = document.getElementById('login-prenom');
+  const loginNom = document.getElementById('login-nom');
+  const loginError = document.getElementById('login-error');
+  const loginStart = document.getElementById('login-start');
+  const loginSessions = document.getElementById('login-sessions');
+  const loginList = document.getElementById('login-list');
+
+  /** Affiche l'écran d'identification (au chargement et à chaque changement d'étudiant). */
+  function showLogin() {
+    loginError.textContent = '';
+    loginPrenom.value = '';
+    loginNom.value = '';
+    studentLabel.textContent = '';
+
+    /* Parties déjà présentes sur ce poste */
+    const players = game.listPlayers();
+    loginList.innerHTML = '';
+    loginSessions.hidden = players.length === 0;
+    for (const p of players) {
+      const btn = document.createElement('button');
+      btn.className = 'login-session';
+      btn.type = 'button';
+      const name = document.createElement('span');
+      name.textContent = `👤 ${p.prenom} ${p.nom.toUpperCase()}`;
+      const prog = document.createElement('span');
+      prog.className = 'progress' + (p.finished ? ' done' : '');
+      prog.textContent = p.finished ? '🏆 terminé' : `mission ${p.missionsDone + 1}/${p.missionsTotal}`;
+      btn.appendChild(name);
+      btn.appendChild(prog);
+      btn.addEventListener('click', () => beginSession(p.prenom, p.nom));
+      loginList.appendChild(btn);
+    }
+
+    loginModal.classList.add('visible');
+    loginPrenom.focus();
+  }
+
+  /** Démarre (ou reprend) la session de l'étudiant identifié. */
+  function beginSession(prenom, nom) {
+    prenom = prenom.trim();
+    nom = nom.trim();
+    if (!prenom || !nom) {
+      loginError.textContent = 'Merci d\'indiquer ton prénom ET ton nom.';
+      (prenom ? loginNom : loginPrenom).focus();
+      return;
+    }
+    loginModal.classList.remove('visible');
+    clear();
+    const resumed = game.startForPlayer(prenom, nom);
+    if (resumed) {
+      print(`💾 Bon retour ${game.player.prenom} ! Ta partie reprend là où tu l'avais laissée.\n`, 'info', true);
+      print('', null);
+    }
+    game.printWelcome();
+    updateHeader();
+    tickTimer();
+    input.focus();
+  }
+
+  loginStart.addEventListener('click', () => beginSession(loginPrenom.value, loginNom.value));
+  [loginPrenom, loginNom].forEach(el => el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); beginSession(loginPrenom.value, loginNom.value); }
   }));
+
+  /* Bouton « changer d'étudiant » de la barre du bas */
+  const hintLogout = document.getElementById('hint-logout');
+  const doLogout = () => { if (game.player) game.logoutRequest(null); };
+  hintLogout.addEventListener('click', doLogout);
+  hintLogout.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); doLogout(); }
+  });
 
   /* ---------------- Démarrage ---------------- */
 
-  const hadSave = !!localStorage.getItem(Game.SAVE_KEY);
-  game.start();
-  if (hadSave && game.state.history.length) {
-    print('💾 Partie précédente restaurée. (« reset --confirm » pour repartir de zéro)\n', 'info', true);
-    print('', null);
-  }
-  game.printWelcome();
-  updateHeader();
-  tickTimer();
+  showLogin();
   setInterval(tickTimer, 10000);
-  input.focus();
 })();

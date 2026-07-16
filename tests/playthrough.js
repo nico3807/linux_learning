@@ -41,9 +41,12 @@ function atMission(n, label) {
   assert(idx === n, `${label} (mission courante attendue : ${n}, obtenue : ${idx})`);
 }
 
-console.log('— Démarrage du jeu —');
-game.start();
+console.log('— Démarrage du jeu (session nominative) —');
+const resumed0 = game.startForPlayer('Nicolas', 'Maurin');
+assert(resumed0 === false, 'Première connexion : nouvelle partie (pas de reprise)');
 atMission(1, 'Le jeu démarre à la mission 1');
+assert(game.listPlayers().length === 1 && game.listPlayers()[0].prenom === 'Nicolas',
+  'L\'étudiant est enregistré dans l\'annuaire du poste');
 
 console.log('\n— Mission 1 : premiers pas —');
 let out = run('certificat');
@@ -276,14 +279,35 @@ assert(out.includes('Change Mode'), 'man affiche le manuel');
 out = run('history');
 assert(out.includes('sudo apt update'), 'history retrace les commandes');
 
-/* Sauvegarde / restauration */
-const game2 = new Game.GameEngine({
-  print: () => {}, clear: () => {}, openEditor: () => {}, onStateChange: () => {},
-  storage: game.storage,
-});
-game2.start();
-assert(game2.finished === true, 'La sauvegarde restaure l\'état terminé');
-assert(game2.fs.isFile('/var/www/html/index.html'), 'La sauvegarde restaure le système de fichiers');
+/* Sessions multi-étudiants sur le même poste */
+console.log('\n— Sessions multi-étudiants —');
+out = run('deconnexion');
+assert(out.includes('sauvegardée'), 'deconnexion : la session est sauvegardée');
+
+const stubs = { print: () => {}, clear: () => {}, openEditor: () => {}, onStateChange: () => {}, storage: game.storage };
+const game2 = new Game.GameEngine(stubs);
+const resumed2 = game2.startForPlayer('Camille', 'Dupont');
+assert(resumed2 === false && game2.finished === false && game2.state.missionIndex === 0,
+  'Un 2e étudiant sur le même poste démarre une partie vierge');
+game2.execute('pwd');
+game2.execute('ls');
+assert(game2.state.missionIndex === 1, 'La partie du 2e étudiant progresse indépendamment');
+
+const game3 = new Game.GameEngine(stubs);
+const resumed3 = game3.startForPlayer('Nicolas', 'Maurin');
+assert(resumed3 === true && game3.finished === true, 'Le 1er étudiant retrouve sa partie terminée');
+assert(game3.fs.isFile('/var/www/html/index.html'), 'La sauvegarde restaure le système de fichiers');
+assert(game3.player.prenom === 'Nicolas' && game3.player.nom === 'Maurin', 'L\'identité est restaurée avec la partie');
+
+const game4 = new Game.GameEngine(stubs);
+const resumed4 = game4.startForPlayer('  camille ', 'DUPONT');
+assert(resumed4 === true && game4.state.missionIndex === 1,
+  'La reprise tolère casse et espaces (camille/DUPONT = Camille Dupont)');
+
+const registry = game4.listPlayers();
+assert(registry.length === 2, 'L\'annuaire du poste liste bien les 2 étudiants');
+assert(registry.some(p => p.finished) && registry.some(p => !p.finished),
+  'L\'annuaire distingue parties terminées et en cours');
 
 console.log(`\n════════════════════════════════════════`);
 if (failures === 0) {

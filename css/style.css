@@ -245,6 +245,146 @@ body {
 #editor-save { color: var(--green); }
 #editor-quit { color: var(--red); }
 
+/* ---------------- Écran d'identification ---------------- */
+
+#loginmodal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 8, 12, .88);
+  z-index: 70;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#loginmodal.visible { display: flex; }
+
+#loginmodal-window {
+  width: min(460px, 100%);
+  background: #0e141b;
+  border: 1px solid var(--green);
+  border-radius: 12px;
+  padding: 24px 26px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .6), 0 0 40px rgba(87, 211, 100, .12);
+}
+
+#loginmodal-window h2 {
+  color: var(--green);
+  font-size: 20px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+#loginmodal-window p {
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#loginmodal-window label {
+  display: block;
+  color: var(--cyan);
+  font-size: 13px;
+  margin: 10px 0 4px;
+}
+
+#loginmodal-window input {
+  width: 100%;
+  background: #101a26;
+  border: 1px solid #33415a;
+  border-radius: 6px;
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 8px 10px;
+  outline: none;
+}
+
+#loginmodal-window input:focus { border-color: var(--green); }
+
+#login-error {
+  color: var(--red) !important;
+  min-height: 16px;
+  margin: 8px 0 0 !important;
+}
+
+#loginmodal-buttons { margin-top: 12px; }
+
+#login-start {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--green);
+  background: linear-gradient(90deg, #1c5f2e, #2e7d43);
+  color: #fff;
+  cursor: pointer;
+}
+
+#login-start:hover { filter: brightness(1.2); }
+
+#login-sessions { margin-top: 16px; border-top: 1px solid #223042; padding-top: 12px; }
+
+#login-sessions-title { font-size: 12px !important; }
+
+#login-list { display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto; }
+
+.login-session {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--mono);
+  font-size: 13px;
+  text-align: left;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #33415a;
+  background: #101a26;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.login-session:hover { border-color: var(--cyan); background: #152232; }
+.login-session .progress { color: var(--dim); white-space: nowrap; }
+.login-session .done { color: var(--green); }
+
+#student-label {
+  color: var(--yellow);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+#cert-identity {
+  text-align: center;
+  color: var(--yellow) !important;
+  font-size: 15px !important;
+  margin: 4px 0 !important;
+}
+
+#hint-logout {
+  cursor: pointer;
+  border: 1px solid #2a3648;
+  border-radius: 6px;
+  padding: 2px 8px;
+  background: #121a24;
+  transition: border-color .15s, color .15s;
+}
+
+#hint-logout:hover, #hint-logout:focus-visible {
+  border-color: var(--green);
+  color: var(--fg);
+  outline: none;
+}
+
+#hint-logout b { color: var(--green); }
+
 /* ---------------- Pop-up du certificat ---------------- */
 
 #certmodal {
