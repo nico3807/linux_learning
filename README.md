@@ -114,6 +114,7 @@ js/terminal.js      interface navigateur : saisie, historique, Tab, éditeur nan
 js/certificate.js   génération du certificat PDF (logos + historique des commandes)
 js/vendor/          jsPDF (bibliothèque embarquée, licence MIT)
 tests/playthrough.js  partie complète automatisée (Node.js)
+docs/GUIDE_ENSEIGNANT.md  déroulé conseillé + solutions (à ne pas diffuser !)
 ```
 
 ### Logos du certificat
