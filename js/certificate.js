@@ -130,7 +130,7 @@ const Certificate = (() => {
     doc.setTextColor(60, 60, 80);
     const intro = doc.splitTextToSize(
       finished
-        ? 'a terminé avec succès les 12 missions du jeu sérieux « MMI Linux Quest » : '
+        ? `a terminé avec succès les ${opts.stats.missionsTotal} missions du jeu sérieux « MMI Linux Quest » : `
           + 'navigation dans l\'arborescence, gestion de fichiers et de répertoires, droits et permissions, '
           + 'administration (sudo, apt), installation et démarrage du serveur web Apache, '
           + 'et publication d\'une page web.'

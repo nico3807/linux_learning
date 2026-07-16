@@ -10,7 +10,8 @@ const Game = (() => {
   const M = (typeof MISSIONS !== 'undefined' ? MISSIONS : require('./missions.js'));
   const { HOME } = V;
 
-  const SAVE_KEY = 'mmi-linux-quest-v1';
+  /* v2 : passage de 12 à 18 missions (les sauvegardes v1 ne sont plus compatibles) */
+  const SAVE_KEY = 'mmi-linux-quest-v2';
 
   class GameEngine {
     /**

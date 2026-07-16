@@ -37,7 +37,7 @@ function run(line) {
 }
 
 function atMission(n, label) {
-  const idx = game.finished ? 13 : game.state.missionIndex + 1;
+  const idx = game.finished ? 19 : game.state.missionIndex + 1;
   assert(idx === n, `${label} (mission courante attendue : ${n}, obtenue : ${idx})`);
 }
 
@@ -176,8 +176,69 @@ out = run('curl localhost');
 assert(out.includes('Portfolio MMI'), 'curl affiche la page personnalisée');
 atMission(12, 'Page vérifiée : mission 11 validée');
 
-console.log('\n— Mission 12 : validation finale —');
+console.log('\n— Mission 12 : head, tail, wc —');
 run('cat missions/mission_12.txt');
+out = run('head -n 5 sae105/stats_visites.txt');
+assert(out.includes('date ; visites') && out.includes('2026-06-04'), 'head -n 5 affiche le début du fichier');
+out = run('tail -n 3 sae105/stats_visites.txt');
+assert(out.includes('2026-06-14') && !out.includes('2026-06-01 '), 'tail -n 3 affiche la fin du fichier');
+atMission(12, 'head + tail : pas encore validé');
+out = run('wc -l sae105/stats_visites.txt');
+assert(out.trim().startsWith('15'), 'wc -l compte les 15 lignes');
+atMission(13, 'head + tail + wc : mission 12 validée');
+out = run('cat sae105/stats_visites.txt | wc -l');
+assert(out.trim() === '15', 'Le pipe cat | wc -l fonctionne aussi');
+
+console.log('\n— Mission 13 : find —');
+run('cat missions/mission_13.txt');
+out = run('find projet_v2 -name "*.png"');
+assert(out.includes('logo_final.png') && out.includes('vieux_logo.png'), 'find liste les .png de tous les sous-dossiers');
+run('mv projet_v2/exports/hd/logo_final.png sae105/maquettes');
+atMission(14, 'Logo retrouvé et rangé : mission 13 validée');
+
+console.log('\n— Mission 14 : nano —');
+run('cat missions/mission_14.txt');
+editorRequest = null;
+run('nano sae105/contenus/bio.txt');
+assert(editorRequest && editorRequest.writable === true, 'nano ouvre l\'éditeur sur bio.txt');
+game.saveFromEditor(editorRequest.path, 'Etudiante en 1re annee de BUT MMI.\nPassionnee de web design.\nFuture integratrice.\n', editorRequest.user);
+atMission(15, 'Bio de 3 lignes avec MMI : mission 14 validée');
+
+console.log('\n— Mission 15 : droits numériques —');
+run('cat missions/mission_15.txt');
+run('chmod 600 sae105/notes_jury.txt');
+atMission(15, 'Un seul chmod : pas encore validé');
+run('chmod 755 scripts/partage.sh');
+atMission(16, 'chmod 600 + 755 : mission 15 validée');
+out = run('ls -l sae105');
+assert(out.includes('-rw-------'), 'ls -l montre bien -rw------- (600)');
+out = run('ls -l scripts');
+assert(out.includes('-rwxr-xr-x'), 'ls -l montre bien -rwxr-xr-x (755)');
+
+console.log('\n— Mission 16 : configuration Apache —');
+run('cat missions/mission_16.txt');
+out = run('grep DocumentRoot /etc/apache2/apache2.conf');
+assert(out.includes('/var/www/html'), 'grep trouve la directive DocumentRoot');
+run('echo "/var/www/html" > sae105/docroot.txt');
+atMission(17, 'DocumentRoot enregistré : mission 16 validée');
+
+console.log('\n— Mission 17 : page équipe —');
+run('cat missions/mission_17.txt');
+out = run('curl localhost/equipe.html');
+assert(out.includes('404'), 'curl sur une page inexistante : 404');
+run('sudo nano /var/www/html/equipe.html');
+assert(editorRequest && editorRequest.path === '/var/www/html/equipe.html' && editorRequest.writable === true,
+  'sudo nano ouvre la page équipe en écriture');
+game.saveFromEditor(editorRequest.path, '<html><body><h2>L\'equipe MMI</h2><p>Camille & Nico</p></body></html>\n', editorRequest.user);
+atMission(17, 'Page créée mais pas encore testée avec curl');
+out = run('curl localhost/equipe.html');
+assert(out.includes('equipe MMI'), 'curl localhost/equipe.html sert la nouvelle page');
+atMission(18, 'Page équipe en ligne : mission 17 validée');
+out = run('curl localhost');
+assert(out.includes('Portfolio MMI'), 'curl localhost sert toujours l\'accueil');
+
+console.log('\n— Mission 18 : validation finale —');
+run('cat missions/mission_18.txt');
 out = run('sudo ./scripts/validation_finale.sh');
 assert(out.includes('Permission non accordée'), 'Script final non exécutable : refus');
 run('chmod +x scripts/validation_finale.sh');
@@ -192,16 +253,16 @@ assert(certModalOpened === 2, 'La pop-up du certificat s\'ouvre à la fin du jeu
 run('certificat');
 assert(certModalOpened === 3, 'La commande « certificat » rouvre la pop-up');
 const stats = game.getStats();
-assert(stats.missionsTotal === 12 && typeof stats.duree === 'string' && stats.date.length > 5,
+assert(stats.missionsTotal === 18 && typeof stats.duree === 'string' && stats.date.length > 5,
   'getStats fournit durée, date et total de missions');
-assert(stats.finished === true && stats.missionsDone === 12, 'getStats après la fin : terminé, 12/12');
+assert(stats.finished === true && stats.missionsDone === 18, 'getStats après la fin : terminé, 18/18');
 assert(game.state.history.includes('sudo apt update'), 'L\'historique complet est disponible pour le PDF');
 
 console.log('\n— Commandes transverses —');
 out = run('indice');
 assert(out.includes('terminé'), 'indice après la fin : message adapté');
 out = run('progression');
-assert(out.includes('12/12'), 'progression : 12/12');
+assert(out.includes('18/18'), 'progression : 18/18');
 out = run('tree sae105');
 assert(out.includes('maquettes') && out.includes('└──'), 'tree fonctionne');
 out = run('grep -i portfolio /var/www/html/index.html');

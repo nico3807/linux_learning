@@ -1,6 +1,6 @@
 /* ============================================================
  * MMI Linux Quest — Définition des missions
- * 12 missions progressives (~3h) sur le thème du BUT MMI.
+ * 18 missions progressives (~3-4h) sur le thème du BUT MMI.
  * Chaque mission : consignes (fichier texte à lire avec cat),
  * 3 indices progressifs (jamais la réponse complète),
  * une fonction check() de validation automatique.
@@ -458,9 +458,232 @@ qui appartient à root : il faudra sudo pour y écrire.
     /* ---------------- MISSION 12 ---------------- */
     {
       id: 12,
-      titre: 'Validation finale',
+      titre: 'Analyser des fichiers (head, tail, wc)',
       fichier: `${H}/missions/mission_12.txt`,
-      texte: box('MISSION 12 — VALIDATION FINALE', `Dernière ligne droite ! L'admin a déposé un script de
+      texte: box('MISSION 12 — ANALYSER DES FICHIERS', `Ton site de SAÉ attire du monde ! L'admin t'a déposé le relevé
+de fréquentation dans ~/sae105/stats_visites.txt. Le fichier est
+long : inutile de tout afficher avec cat, Linux sait extraire
+juste ce qu'il faut.
+
+  OBJECTIFS :
+  1. Affiche les 5 PREMIÈRES lignes du fichier de statistiques
+  2. Affiche les 3 DERNIÈRES lignes (les jours les plus récents)
+  3. Compte le nombre de lignes du fichier
+
+  💡 Commandes utiles : head, tail, wc (avec leurs options -n / -l)
+  💡 Bonus : les pipes enchaînent les commandes,
+     ex :  cat fichier | wc -l`),
+      indices: [
+        `Trois commandes : « head » affiche le début d'un fichier, « tail » la fin, « wc » compte (word count). Chacune prend le chemin du fichier en argument.`,
+        `L'option -n règle le nombre de lignes de head et tail : head -n 5 <fichier>. Pour ne compter que les lignes avec wc, utilise l'option -l.`,
+        `Les trois commandes à lancer ont la forme : head -n 5 sae105/<fichier>, tail -n 3 sae105/<fichier>, wc -l sae105/<fichier>.`,
+      ],
+      setup(ctx) {
+        const { fs } = ctx;
+        const jours = [];
+        for (let j = 1; j <= 14; j++) {
+          jours.push(`2026-06-${String(j).padStart(2, '0')} ; ${100 + j * 7} visites ; ${30 + j * 2} pages vues`);
+        }
+        fs.writeFile(`${H}/sae105/stats_visites.txt`,
+          `date ; visites ; pages\n${jours.join('\n')}\n`, 'etudiant');
+      },
+      check(ctx) {
+        return ctx.state.used.has('head') && ctx.state.used.has('tail') && ctx.state.used.has('wc');
+      },
+      bravo: `head, tail, wc : le trio d'analyse rapide ! Sur un vrai serveur,\nc'est comme ça qu'on inspecte les logs sans noyer le terminal.`,
+    },
+
+    /* ---------------- MISSION 13 ---------------- */
+    {
+      id: 13,
+      titre: 'Retrouver ses fichiers (find)',
+      fichier: `${H}/missions/mission_13.txt`,
+      texte: box('MISSION 13 — RETROUVER SES FICHIERS', `Catastrophe : ton binôme a livré le dossier ~/projet_v2 tout en
+vrac, avec des sous-dossiers partout. Quelque part là-dedans se
+cache le logo définitif du client : logo_final.png.
+
+Tu as déjà utilisé grep pour chercher DANS les fichiers.
+Cette fois il faut chercher des fichiers PAR LEUR NOM : c'est
+le travail de la commande find.
+
+  OBJECTIFS :
+  1. Liste tous les fichiers .png cachés dans ~/projet_v2
+     (find accepte les jokers :  "*.png")
+  2. Déplace logo_final.png dans   ~/sae105/maquettes
+
+  💡 Forme générale : find <dossier> -name "motif"
+  💡 Le résultat de find te donne le chemin complet : parfait
+     pour le réutiliser dans ton mv !`),
+      indices: [
+        `find <dossier> -name "*.png" explore le dossier ET tous ses sous-dossiers. Les guillemets autour du motif sont importants.`,
+        `Lance : find projet_v2 -name "*.png" — parmi les résultats, repère le chemin complet de logo_final.png.`,
+        `Recopie le chemin donné par find comme source de ton mv : mv projet_v2/<sous_dossier>/logo_final.png sae105/maquettes`,
+      ],
+      setup(ctx) {
+        const { fs } = ctx;
+        fs.mkdir(`${H}/projet_v2/ebauches`, 'etudiant', true);
+        fs.mkdir(`${H}/projet_v2/exports/hd`, 'etudiant', true);
+        fs.mkdir(`${H}/projet_v2/archives`, 'etudiant', true);
+        fs.writeFile(`${H}/projet_v2/ebauches/croquis.png`, '[esquisse au crayon scannée]\n', 'etudiant');
+        fs.writeFile(`${H}/projet_v2/ebauches/palette.txt`, 'Couleurs : #7b5cff, #57d364, #ffd166\n', 'etudiant');
+        fs.writeFile(`${H}/projet_v2/exports/hd/logo_final.png`, '[logo définitif haute définition]\n', 'etudiant');
+        fs.writeFile(`${H}/projet_v2/exports/notes_export.txt`, 'Export du 12/06 en 300dpi.\n', 'etudiant');
+        fs.writeFile(`${H}/projet_v2/archives/vieux_logo.png`, '[ancienne version du logo]\n', 'etudiant');
+      },
+      check(ctx) {
+        return ctx.fs.isFile(`${H}/sae105/maquettes/logo_final.png`) && ctx.state.used.has('find');
+      },
+      bravo: `find pour les NOMS de fichiers, grep pour leur CONTENU :\ntu as maintenant les deux radars du terminal.`,
+    },
+
+    /* ---------------- MISSION 14 ---------------- */
+    {
+      id: 14,
+      titre: 'Rédiger avec l\'éditeur nano',
+      fichier: `${H}/missions/mission_14.txt`,
+      texte: box('MISSION 14 — RÉDIGER AVEC NANO', `Le site du client aura une page « À propos ». Écris ta biographie
+de créateur/créatrice ! Les redirections echo c'est bien pour une
+ligne, mais pour un vrai texte, on ouvre un éditeur : nano.
+
+  OBJECTIFS :
+  1. Ouvre le fichier  ~/sae105/contenus/bio.txt  dans nano
+  2. Rédige ta mini-biographie :
+       - AU MOINS 3 lignes de texte
+       - elle doit mentionner   MMI   quelque part
+  3. Enregistre (Ctrl+O ou bouton) et quitte (Ctrl+X)
+  4. Vérifie ton œuvre avec cat
+
+  💡 nano <chemin/fichier> crée le fichier s'il n'existe pas.`),
+      indices: [
+        `La commande a la forme : nano sae105/contenus/<nom_du_fichier>. Une fenêtre d'édition s'ouvre par-dessus le terminal.`,
+        `Écris au moins 3 lignes (appuie sur Entrée pour changer de ligne) et glisse le mot MMI dans ton texte, puis bouton « Enregistrer » et « Quitter ».`,
+        `Si la mission ne se valide pas : vérifie avec cat que le fichier contient bien 3 lignes non vides ET le mot MMI, puis rouvre-le avec nano pour compléter.`,
+      ],
+      setup() {},
+      check(ctx) {
+        if (!ctx.state.used.has('nano')) return false;
+        const node = ctx.fs.get(`${H}/sae105/contenus/bio.txt`);
+        if (!node || node.type !== 'file') return false;
+        const lines = node.content.split('\n').filter(l => l.trim() !== '');
+        return lines.length >= 3 && /mmi/i.test(node.content);
+      },
+      bravo: `Belle plume ! nano est l'éditeur passe-partout des serveurs :\ntu le retrouveras sur toutes les machines Linux.`,
+    },
+
+    /* ---------------- MISSION 15 ---------------- */
+    {
+      id: 15,
+      titre: 'Les droits en notation numérique',
+      fichier: `${H}/missions/mission_15.txt`,
+      texte: box('MISSION 15 — DROITS EN NOTATION NUMÉRIQUE', `Tu connais chmod +x. Les pros utilisent aussi la notation
+NUMÉRIQUE : 3 chiffres pour propriétaire / groupe / autres.
+
+    r = 4    w = 2    x = 1    (on additionne)
+    7 = rwx    6 = rw-    5 = r-x    4 = r--    0 = ---
+
+  Deux fichiers t'attendent :
+  - ~/sae105/notes_jury.txt   → CONFIDENTIEL : toi seul(e) dois
+    pouvoir le lire et l'écrire, rien pour les autres  (6-0-0)
+  - ~/scripts/partage.sh      → script à partager : tout le monde
+    peut le lire et l'exécuter, toi seul(e) peux l'écrire (7-5-5)
+
+  OBJECTIFS :
+  1. Applique les bons droits numériques à ces deux fichiers
+  2. Contrôle le résultat avec ls -l
+
+  💡 Forme : chmod <3 chiffres> <fichier>`),
+      indices: [
+        `Additionne pour chaque catégorie : lecture+écriture = 4+2 = 6 ; lecture+exécution = 4+1 = 5 ; tout = 7 ; rien = 0.`,
+        `Le fichier confidentiel doit finir en -rw------- et le script en -rwxr-xr-x (vérifie avec ls -l sae105 et ls -l scripts).`,
+        `Les deux commandes : chmod 600 sae105/notes_jury.txt puis chmod 755 scripts/partage.sh`,
+      ],
+      setup(ctx) {
+        const { fs } = ctx;
+        fs.writeFile(`${H}/sae105/notes_jury.txt`,
+          'Notes personnelles pour la soutenance : parler du choix des couleurs...\n', 'etudiant');
+        fs.writeFile(`${H}/scripts/partage.sh`,
+          '#!/bin/bash\necho "Envoi du dossier sae105 au serveur de rendu... OK"\n', 'etudiant');
+        fs.chmod(`${H}/sae105/notes_jury.txt`, '644', 'etudiant');
+        fs.chmod(`${H}/scripts/partage.sh`, '644', 'etudiant');
+      },
+      check(ctx) {
+        const a = ctx.fs.get(`${H}/sae105/notes_jury.txt`);
+        const b = ctx.fs.get(`${H}/scripts/partage.sh`);
+        return !!a && !!b && a.perms === '600' && b.perms === '755';
+      },
+      bravo: `600, 644, 755 : ces trois nombres vont te suivre toute ta vie\nde webmaster — ce sont les réglages types d'un serveur web !`,
+    },
+
+    /* ---------------- MISSION 16 ---------------- */
+    {
+      id: 16,
+      titre: 'Explorer la configuration du serveur',
+      fichier: `${H}/missions/mission_16.txt`,
+      texte: box('MISSION 16 — LA CONFIGURATION D\'APACHE', `D'où sort cette page quand on tape curl localhost ? Apache lit sa
+configuration dans /etc/apache2/apache2.conf. On y trouve
+notamment la directive DocumentRoot : le dossier que le serveur
+publie sur le web.
+
+  OBJECTIFS :
+  1. Cherche la ligne   DocumentRoot   dans le fichier de
+     configuration d'Apache (inutile de tout lire : grep !)
+  2. Enregistre le CHEMIN trouvé (et seulement le chemin) dans
+     ~/sae105/docroot.txt   (avec echo et >)
+
+  💡 Les fichiers de /etc appartiennent à root, mais ils sont
+     LISIBLES par tout le monde : pas besoin de sudo pour lire.`),
+      indices: [
+        `grep <motif> <fichier> affiche les lignes contenant le motif. Ici le motif est DocumentRoot et le fichier est /etc/apache2/apache2.conf.`,
+        `La ligne trouvée ressemble à « DocumentRoot /chemin/vers/dossier » : c'est ce chemin qu'il faut recopier.`,
+        `Termine avec : echo "<le_chemin_trouvé>" > sae105/docroot.txt — le chemin commence par /var/...`,
+      ],
+      setup() {},
+      check(ctx) {
+        const node = ctx.fs.get(`${H}/sae105/docroot.txt`);
+        return !!node && node.type === 'file' && node.content.includes('/var/www/html')
+          && ctx.state.used.has('grep');
+      },
+      bravo: `Tu sais maintenant OÙ Apache va chercher les pages web :\nDocumentRoot = /var/www/html. Tout s'explique !`,
+    },
+
+    /* ---------------- MISSION 17 ---------------- */
+    {
+      id: 17,
+      titre: 'Publier une deuxième page web',
+      fichier: `${H}/missions/mission_17.txt`,
+      texte: box('MISSION 17 — LA PAGE ÉQUIPE', `Le client veut une page « équipe » en plus de l'accueil. Tu sais
+désormais que tout fichier posé dans /var/www/html devient une
+page web : /var/www/html/equipe.html sera servie à l'adresse
+localhost/equipe.html !
+
+  OBJECTIFS :
+  1. Crée la page   /var/www/html/equipe.html   (sudo nano !)
+     Elle doit contenir au moins un sous-titre <h2> ... </h2>
+  2. Vérifie qu'elle est bien en ligne :
+     curl localhost/equipe.html
+
+  💡 Rappel : /var/www/html appartient à root...
+  💡 Exemple minimal :  <h2>L'équipe MMI</h2>`),
+      indices: [
+        `Comme pour l'accueil (mission 11) : le dossier appartient à root, donc l'éditeur doit être ouvert avec le préfixe administrateur.`,
+        `sudo nano /var/www/html/equipe.html — écris ta page avec une balise <h2>, enregistre, quitte.`,
+        `Le test final : curl localhost/equipe.html — tu dois voir TON code HTML. Si « 404 Not Found » : vérifie le nom exact du fichier avec ls /var/www/html.`,
+      ],
+      setup() {},
+      check(ctx) {
+        const node = ctx.fs.get('/var/www/html/equipe.html');
+        if (!node || node.type !== 'file') return false;
+        return /<h2[\s>]/i.test(node.content) && ctx.state.flags.curledEquipePage;
+      },
+      bravo: `Un site multi-pages ! Tu viens de comprendre le lien direct\nentre les fichiers du serveur et les URL du navigateur.`,
+    },
+
+    /* ---------------- MISSION 18 ---------------- */
+    {
+      id: 18,
+      titre: 'Validation finale',
+      fichier: `${H}/missions/mission_18.txt`,
+      texte: box('MISSION 18 — VALIDATION FINALE', `Dernière ligne droite ! L'admin a déposé un script de
 validation dans ~/scripts : il contrôle tout ton travail et
 délivre le certificat officiel « MMI Linux Quest ».
 

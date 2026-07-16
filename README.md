@@ -21,7 +21,7 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
 - Les **consignes sont des fichiers texte** dans le terminal virtuel : le
   joueur les affiche avec `cat` (par exemple `cat missions/mission_01.txt`)
   puis tape les commandes correspondantes.
-- **12 missions progressives** (~3 heures de jeu au total) :
+- **18 missions progressives** (~3 à 4 heures de jeu au total) :
 
 | # | Mission | Notions |
 |---|---------|---------|
@@ -31,12 +31,18 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
 | 4 | Ranger ses fichiers | `mv`, `cp`, renommage |
 | 5 | Faire le ménage | `rm`, `rmdir`, `rm -r` |
 | 6 | Écrire dans des fichiers | `echo`, redirections `>` et `>>` |
-| 7 | Chercher | `grep -r`, `find` |
-| 8 | Droits et exécution | `ls -l`, `chmod`, `./script.sh` |
+| 7 | Chercher dans les contenus | `grep -r` |
+| 8 | Droits et exécution | `ls -l`, `chmod +x`, `./script.sh` |
 | 9 | Devenir administrateur | `sudo`, `apt update`, `apt install` |
 | 10 | Serveur web | `systemctl start/status`, `curl` |
 | 11 | Publier sa page | `sudo nano`, HTML dans `/var/www/html` |
-| 12 | Validation finale | révision : `chmod` + `sudo` + exécution |
+| 12 | Analyser des fichiers | `head`, `tail`, `wc`, pipes `\|` |
+| 13 | Retrouver ses fichiers | `find -name`, jokers `*` |
+| 14 | Rédiger avec l'éditeur | `nano` (création et édition) |
+| 15 | Droits numériques | `chmod 600/644/755`, lecture de `ls -l` |
+| 16 | Configuration du serveur | `grep` dans `/etc/apache2/apache2.conf`, DocumentRoot |
+| 17 | Site multi-pages | seconde page dans `/var/www/html`, `curl localhost/...` |
+| 18 | Validation finale | révision : `chmod` + `sudo` + exécution |
 
 - **Jamais la réponse, toujours de l'aide** : la commande `indice` donne
   jusqu'à 3 indices progressifs par mission, les messages d'erreur orientent
@@ -55,7 +61,7 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
   tout moment** via le bouton « 📜 certificat » de la barre du bas (ou la
   commande `certificat`) : le document devient une « Attestation de
   parcours » portant la mention **« NON TERMINÉ »** (filigrane + statut),
-  avec le nombre de missions réussies (ex. 7/12) et l'historique des
+  avec le nombre de missions réussies (ex. 7/18) et l'historique des
   commandes déjà saisies. L'étudiant garde ainsi une trace de sa séance et
   pourra reprendre sa partie plus tard (sauvegarde automatique).
 
@@ -87,7 +93,7 @@ Aucune compilation nécessaire. Deux options :
 
 ## 🧪 Tests
 
-Un test automatique rejoue une partie complète (les 12 missions, plus les cas
+Un test automatique rejoue une partie complète (les 18 missions, plus les cas
 d'erreur pédagogiques) :
 
 ```bash
@@ -102,7 +108,7 @@ css/style.css       thème « terminal rétro »
 assets/             logos utilisés sur le certificat PDF
 js/vfs.js           système de fichiers virtuel (arborescence, droits, propriétaires)
 js/commands.js      interpréteur : parsing, pipes, redirections, sudo + toutes les commandes
-js/missions.js      ⭐ les 12 missions : consignes, indices, validation
+js/missions.js      ⭐ les 18 missions : consignes, indices, validation
 js/game.js          moteur : cycle des missions, sauvegarde, certificat
 js/terminal.js      interface navigateur : saisie, historique, Tab, éditeur nano
 js/certificate.js   génération du certificat PDF (logos + historique des commandes)

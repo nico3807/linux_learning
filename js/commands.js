@@ -115,7 +115,7 @@ const Shell = (() => {
     certificat: {
       desc: 'télécharge ton certificat en PDF (mention « Non terminé » avant la fin)',
       usage: 'certificat',
-      man: 'Génère le certificat PDF du parcours. Disponible à tout moment :\n    avant la fin des 12 missions, le document porte la mention\n    « NON TERMINÉ » (pratique si la séance se termine avant le jeu !).',
+      man: 'Génère le certificat PDF du parcours. Disponible à tout moment :\n    avant la fin des 18 missions, le document porte la mention\n    « NON TERMINÉ » (pratique si la séance se termine avant le jeu !).',
       run(ctx) { ctx.game.requestCertificate(ctx); },
     },
 
@@ -629,9 +629,12 @@ const Shell = (() => {
       man: 'Client URL : envoie une requête HTTP et affiche la réponse.\n    « localhost » désigne ta propre machine.',
       run(ctx, args) {
         if (!args.length) { ctx.sink.line('curl: précise une URL. Exemple : curl localhost', 'error'); return; }
-        const url = args[args.length - 1].replace(/^https?:\/\//, '').replace(/\/$/, '');
-        if (url !== 'localhost' && url !== '127.0.0.1') {
-          ctx.sink.line(`curl: (6) Could not resolve host: ${url}`, 'error');
+        const url = args[args.length - 1].replace(/^https?:\/\//, '');
+        const slash = url.indexOf('/');
+        const host = (slash === -1 ? url : url.slice(0, slash)).replace(/:80$/, '');
+        let path = slash === -1 ? '/' : url.slice(slash);
+        if (host !== 'localhost' && host !== '127.0.0.1') {
+          ctx.sink.line(`curl: (6) Could not resolve host: ${host}`, 'error');
           ctx.sink.line('   💡 Dans ce jeu, seul « localhost » (ta machine) répond.', 'hint');
           return;
         }
@@ -640,12 +643,22 @@ const Shell = (() => {
           ctx.sink.line('   💡 Y a-t-il bien un serveur web installé ET démarré ?', 'hint');
           return;
         }
-        const page = ctx.fs.get('/var/www/html/index.html');
-        const content = page && page.type === 'file' ? page.content : '';
+        if (path === '/' || path === '') path = '/index.html';
+        const page = ctx.fs.get('/var/www/html' + path);
+        if (!page || page.type !== 'file') {
+          ctx.sink.line('<html><body><h1>404 Not Found</h1>');
+          ctx.sink.line(`<p>La page ${path} n'existe pas sur ce serveur.</p></body></html>`);
+          ctx.sink.line(`   💡 Le serveur cherche le fichier /var/www/html${path} — existe-t-il ?`, 'hint');
+          return;
+        }
+        const content = page.content;
         ctx.sink.push(content.endsWith('\n') ? content : content + '\n');
         ctx.state.flags.curledLocalhost = true;
-        if (content && !content.includes('Apache2 Ubuntu Default Page')) {
+        if (path === '/index.html' && content && !content.includes('Apache2 Ubuntu Default Page')) {
           ctx.state.flags.curledCustomPage = true;
+        }
+        if (path === '/equipe.html') {
+          ctx.state.flags.curledEquipePage = true;
         }
       },
     },
