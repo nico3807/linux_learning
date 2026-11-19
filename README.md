@@ -88,6 +88,11 @@ Le terminal gère aussi : **historique** (flèches ↑↓), **complétion Tab**
 (commandes et chemins), `Ctrl+L` (effacer), les **pipes** (`cat x | wc -l`)
 et les **redirections** (`>`, `>>`).
 
+**Copier-coller désactivé** : coller (Ctrl+V, clic droit, glisser-déposer)
+est refusé dans la ligne de commande et dans l'éditeur, et le texte du
+terminal n'est pas sélectionnable. Les étudiants tapent eux-mêmes chaque
+commande (les champs prénom / nom de l'accueil restent libres).
+
 ## 🚀 Mise en production sur GitHub Pages
 
 Aucune compilation nécessaire. Deux options :

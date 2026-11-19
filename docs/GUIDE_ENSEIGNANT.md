@@ -224,6 +224,10 @@ sudo ./scripts/validation_finale.sh
 
 - **Rien ne sort du navigateur** : aucune vraie commande n'est exécutée,
   aucun risque pour les postes.
+- **Copier-coller désactivé** dans le terminal et l'éditeur : les
+  étudiants doivent taper chaque commande (un message le rappelle s'ils
+  essaient de coller). L'historique (flèches ↑↓) et la complétion Tab
+  restent disponibles.
 - Un étudiant bloqué doit épuiser ses 3 `indice` avant d'appeler :
   ni les consignes ni les indices ne nomment la commande à utiliser.
   Les indices renvoient vers `aide` (ce que fait chaque commande) et

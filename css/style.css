@@ -105,6 +105,9 @@ body {
 #output {
   font-family: inherit;
   font-size: inherit;
+  /* Copier-coller désactivé : le texte du terminal n'est pas sélectionnable */
+  user-select: none;
+  -webkit-user-select: none;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.45;

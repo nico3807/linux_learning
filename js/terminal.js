@@ -130,6 +130,48 @@
     if (!window.getSelection().toString()) input.focus();
   });
 
+  /* ---------------- Copier-coller désactivé ----------------
+   * Les étudiants doivent TAPER leurs commandes : coller (Ctrl+V, clic
+   * droit, clic molette) ou glisser-déposer du texte est refusé dans la
+   * ligne de commande et dans l'éditeur, et le texte du terminal ne peut
+   * pas être copié. Les champs prénom / nom de l'accueil restent libres. */
+  const NO_PASTE_MSG = '📋 Copier-coller désactivé : tape la commande toi-même, c\'est en tapant qu\'on la retient !';
+  let lastNoPaste = 0;
+
+  function warnNoPaste() {
+    const now = Date.now();
+    if (now - lastNoPaste < 300) return; // paste + beforeinput : un seul message par tentative
+    lastNoPaste = now;
+    if (editorCtx) {
+      editorTitle.textContent = '📋 Coller est désactivé : tape ton texte toi-même.';
+      clearTimeout(warnNoPaste.timer);
+      warnNoPaste.timer = setTimeout(() => {
+        if (editorCtx) editorTitle.textContent = editorCtx.title;
+      }, 2500);
+    } else {
+      print(NO_PASTE_MSG + '\n', 'hint', true);
+    }
+  }
+
+  function refuse(e) {
+    e.preventDefault();
+    warnNoPaste();
+  }
+
+  [input, editorArea].forEach((el) => {
+    el.addEventListener('paste', refuse);
+    el.addEventListener('drop', refuse);
+    el.addEventListener('beforeinput', (e) => {
+      if (/^insertFrom(Paste|Drop|Yank)/.test(e.inputType || '')) refuse(e);
+    });
+  });
+
+  ['copy', 'cut'].forEach((type) => {
+    document.addEventListener(type, (e) => {
+      if (screen.contains(e.target) || screen.contains(document.activeElement)) refuse(e);
+    });
+  });
+
   /* ---------------- Complétion Tab ---------------- */
 
   function autocomplete() {
@@ -191,8 +233,9 @@
   /* ---------------- Éditeur nano ---------------- */
 
   function openEditor(path, content, writable, user) {
-    editorCtx = { path, user, writable };
-    editorTitle.textContent = `GNU nano (simulé) — ${VFS.pretty(path)}${writable ? '' : '  [lecture seule]'}`;
+    const title = `GNU nano (simulé) — ${VFS.pretty(path)}${writable ? '' : '  [lecture seule]'}`;
+    editorCtx = { path, user, writable, title };
+    editorTitle.textContent = title;
     editorArea.value = content;
     editor.classList.add('visible');
     editorArea.focus();
