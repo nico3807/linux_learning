@@ -45,9 +45,9 @@ apprends à te repérer.
   💡 Pour de l'aide sur une commande : man <commande>
   💡 Bloqué(e) ? Tape : indice`),
       indices: [
-        `Deux commandes suffisent. La première affiche le chemin du dossier courant : son nom vient de l'anglais « print working directory ».`,
-        `La seconde commande liste le contenu d'un dossier : c'est l'abréviation de « list » en 2 lettres.`,
-        `Tape la commande de 3 lettres commençant par « pw », valide avec Entrée, puis la commande de 2 lettres commençant par « l ».`,
+        `Deux commandes suffisent. Tape « aide » : la liste affiche toutes les commandes disponibles, avec ce que fait chacune.`,
+        `Dans cette liste, cherche la commande qui « affiche le chemin du répertoire courant » (son nom vient de l'anglais « print working directory »), puis celle qui « liste le contenu d'un répertoire ».`,
+        `La première fait 3 lettres et commence par « pw » ; la seconde fait 2 lettres et commence par « l ». Tape-les l'une après l'autre, chacune validée par Entrée.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -92,9 +92,9 @@ sont cachés : un simple listage ne les montre pas.
 
   💡 Le raccourci « ~ » désigne toujours ton dossier personnel.`),
       indices: [
-        `Pour changer de dossier, utilise cd (« change directory ») suivi du chemin du dossier. Tu peux descendre de deux niveaux d'un coup en séparant les dossiers par un « / ».`,
-        `Les fichiers cachés s'affichent avec une option de ls : une lettre précédée d'un tiret, la première de l'alphabet.`,
-        `Une fois le fichier caché repéré, affiche son contenu avec cat en recopiant son nom exact (n'oublie pas le point au début du nom). Pour rentrer, donne à cd le raccourci de ton dossier personnel, ou même rien du tout.`,
+        `Il te faut trois commandes : une pour changer de dossier, une pour lister (avec une option), une pour afficher un fichier. Cherche-les dans « aide ».`,
+        `Pour changer de dossier, tu peux descendre de deux niveaux d'un coup en séparant les dossiers par un « / ». Les fichiers cachés s'affichent grâce à une option de la commande qui liste : lis son manuel avec « man ».`,
+        `L'option qui montre les fichiers cachés est une lettre précédée d'un tiret : la première de l'alphabet (« all »). Recopie ensuite le nom exact du fichier caché, point du début compris. Pour rentrer, la commande de déplacement accepte le raccourci « ~ », ou même rien du tout.`,
       ],
       setup() {},
       check(ctx) {
@@ -126,9 +126,9 @@ des dossiers !
 
   💡 Vérifie ton travail en listant le contenu de sae105.`),
       indices: [
-        `« mkdir » (make directory) crée un dossier ; « touch » crée un fichier vide. Tu peux les lancer depuis ~ sans te déplacer, en donnant des chemins comme sae105/maquettes.`,
-        `Crée d'abord sae105, puis les sous-dossiers en donnant leur chemin (le dossier, un « / », puis le sous-dossier). Astuce : mkdir accepte plusieurs noms d'un coup, et l'option -p crée toute la profondeur.`,
-        `Il te faut 3 créations de dossiers (mkdir) et 1 création de fichier (touch), en indiquant à chaque fois le chemin qui part de sae105. Compare ensuite le contenu de sae105 avec l'arborescence attendue.`,
+        `Il te faut une commande qui crée des dossiers et une autre qui crée un fichier vide : cherche-les dans « aide ».`,
+        `Le nom de la commande qui crée un dossier vient de l'anglais « make directory ». Tu peux tout faire depuis ~ sans te déplacer, en donnant des chemins comme sae105/maquettes.`,
+        `Il te faut 3 créations de dossiers et 1 création de fichier, en indiquant à chaque fois le chemin qui part de sae105. Astuce : la commande qui crée les dossiers accepte plusieurs noms d'un coup. Compare ensuite le contenu de sae105 avec l'arborescence attendue.`,
       ],
       setup() {},
       check(ctx) {
@@ -160,9 +160,9 @@ le dossier ~/telechargements. À toi de les ranger dans le projet !
   💡 Déplacer et renommer, c'est la même opération :
      tout dépend du chemin de destination.`),
       indices: [
-        `La syntaxe est toujours : commande <source> <destination>. Si la destination est un dossier, le fichier va dedans ; si c'est un nouveau nom, le fichier est renommé.`,
-        `mv (« move ») déplace, cp (« copy ») copie. Pour déplacer ET renommer en une seule fois, donne à mv comme destination le chemin du dossier suivi du nouveau nom.`,
-        `Il te faut 4 commandes : deux mv pour les images, un mv avec le nouveau nom complet pour l'article, et un cp pour le mp3. Vérifie ensuite le contenu de sae105/contenus et de telechargements.`,
+        `Deux commandes : l'une déplace (ou renomme), l'autre copie. Cherche-les dans « aide ». Elles s'utilisent de la même façon : d'abord la source, puis la destination.`,
+        `Leurs noms sont les abréviations en 2 lettres de « move » et de « copy ». Si la destination est un dossier, le fichier va dedans ; si c'est un nouveau nom, le fichier est renommé.`,
+        `Il te faut 4 commandes : deux déplacements pour les images, un déplacement dont la destination se termine par le nouveau nom pour l'article, et une copie pour le mp3. Vérifie ensuite le contenu de sae105/contenus et de telechargements.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -204,9 +204,9 @@ il n'y a PAS de corbeille. Supprimé = perdu pour toujours !
   ⚠️  Réfléchis toujours à deux fois avant une suppression
      récursive !`),
       indices: [
-        `rm supprime un fichier. rmdir ne supprime que les dossiers VIDES. Pour un dossier plein, rm a besoin d'une option qui veut dire « récursif ».`,
-        `L'option récursive de rm est une lettre précédée d'un tiret, la même que dans « récursif ». Elle supprime le dossier ET tout ce qu'il contient.`,
-        `4 suppressions : rm pour chacun des deux fichiers, rmdir pour le dossier vide, puis rm avec son option récursive pour le dossier plein. Vérifie ensuite le résultat en listant ton dossier personnel.`,
+        `Il existe une commande qui supprime des fichiers, et une autre réservée aux dossiers VIDES : cherche-les dans « aide ».`,
+        `Leurs noms viennent de l'anglais « remove » et « remove directory ». Pour un dossier plein, la commande qui supprime les fichiers a besoin d'une option « récursive » : lis son manuel avec « man ».`,
+        `4 suppressions : une pour chacun des deux fichiers, une pour le dossier vide, puis une avec l'option récursive (la lettre par laquelle commence « récursif ») pour le dossier plein. Vérifie ensuite le résultat en listant ton dossier personnel.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -248,9 +248,9 @@ il n'y a PAS de corbeille. Supprimé = perdu pour toujours !
 
   ⚠️  Attention : un > de trop et tu écrases tout !`),
       indices: [
-        `echo affiche le texte qu'on lui donne (entre guillemets). Suivi de > et d'un nom de fichier, le texte part dans le fichier au lieu de l'écran.`,
-        `Pour la première ligne, envoie ton slogan dans sae105/contenus/slogan.txt avec >. Pour la deuxième, même principe mais avec >> pour ajouter sans écraser.`,
-        `Si ton fichier ne contient qu'une ligne, c'est que tu as utilisé > deux fois (il écrase). Recommence : d'abord >, puis >>. Contrôle ensuite le contenu du fichier avec cat.`,
+        `Il te faut la commande qui « affiche un texte » (cherche-la dans « aide »). Suivie de > et d'un nom de fichier, son texte part dans le fichier au lieu de l'écran.`,
+        `Pour la première ligne, envoie ton slogan (entre guillemets) dans sae105/contenus/slogan.txt avec >. Pour la deuxième, même principe mais avec >> pour ajouter sans écraser.`,
+        `Si ton fichier ne contient qu'une ligne, c'est que tu as utilisé > deux fois (il écrase). Recommence : d'abord >, puis >>. Affiche ensuite le contenu du fichier pour contrôler.`,
       ],
       setup() {},
       check(ctx) {
@@ -280,9 +280,9 @@ chercher À L'INTÉRIEUR des fichiers.
      ~/sae105/code_serveur.txt   (avec une redirection,
      comme à la mission 6)`),
       indices: [
-        `grep cherche un texte (le motif) dans des fichiers : on lui donne d'abord le motif, puis l'endroit où chercher. Pour fouiller tout un dossier et ses sous-dossiers, ajoute la même option récursive que rm.`,
-        `Cherche le mot CODE, récursivement, dans le dossier cours : la réponse t'indiquera le fichier qui le contient. Il ne restera qu'à le lire avec cat.`,
-        `Le code trouvé ressemble à XXXXXX-XX. Enregistre-le dans sae105/code_serveur.txt avec echo et >, comme à la mission 6 (recopie exactement le code, tirets compris).`,
+        `Il te faut la commande qui « cherche un texte DANS le contenu des fichiers » (voir « aide »). On lui donne d'abord le motif cherché, puis l'endroit où chercher.`,
+        `Pour fouiller tout un dossier et ses sous-dossiers, elle a besoin de la même option récursive qu'à la mission 5 (son manuel la décrit). Cherche le mot CODE dans le dossier cours : la réponse t'indiquera le fichier qui le contient.`,
+        `Affiche ce fichier pour lire le code : il ressemble à XXXXXX-XX. Enregistre-le dans sae105/code_serveur.txt de la même façon que le slogan de la mission 6 (recopie exactement le code, tirets compris).`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -318,9 +318,9 @@ Dans une liste détaillée, les droits se lisent ainsi :
   2. Rends ce script exécutable
   3. Exécute ce script`),
       indices: [
-        `chmod modifie les droits. Pour AJOUTER le droit d'exécution, on utilise le signe + suivi de la lettre du droit d'exécution.`,
-        `Donne au script le droit d'exécution avec chmod. Vérifie ensuite avec la liste détaillée (option -l de ls) : un « x » doit apparaître dans les droits.`,
-        `Après le chmod, lance le script en tapant simplement son chemin, précédé de « ./ » (« ici, dans le dossier courant »).`,
+        `Il te faut la commande qui « modifie les droits d'un fichier » (voir « aide »). Pour regarder les droits, la commande qui liste a une option « format long » : lis son manuel.`,
+        `Pour AJOUTER le droit d'exécution, on écrit le signe + suivi de la lettre du droit d'exécution, puis le chemin du script. Vérifie ensuite : un « x » doit apparaître dans les droits.`,
+        `Pour lancer le script, tape simplement son chemin, précédé de « ./ » (« ici, dans le dossier courant »).`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -366,9 +366,9 @@ gestionnaire de paquets.
   ⚠️  Sans les droits d'administrateur, le système refusera :
      c'est normal, essaie !`),
       indices: [
-        `apt est le gestionnaire de paquets de Debian/Ubuntu. Deux actions t'intéressent : « update » (rafraîchir la liste) puis « install » suivie du nom du paquet.`,
-        `N'oublie pas le préfixe sudo devant CHAQUE commande apt, sinon : permission refusée.`,
-        `L'ordre des mots compte : d'abord sudo, puis apt, puis l'action. Fais update avant install, et vérifie l'orthographe exacte du paquet : apache2.`,
+        `Deux commandes à combiner : celle qui « exécute une commande en tant qu'administrateur » et le « gestionnaire de paquets ». Cherche-les dans « aide ».`,
+        `Le manuel du gestionnaire de paquets (man) décrit ses deux actions : l'une met à jour la liste, l'autre installe un paquet. Le préfixe administrateur se place devant CHAQUE commande, sinon : permission refusée.`,
+        `L'ordre des mots compte : d'abord le préfixe administrateur, puis le gestionnaire de paquets, puis l'action (et pour l'installation, le nom exact du paquet : apache2). Mets à jour la liste avant d'installer.`,
       ],
       setup() {},
       check(ctx) {
@@ -394,9 +394,9 @@ une commande dédiée.
 
   💡 localhost = « cette machine » (127.0.0.1).`),
       indices: [
-        `systemctl pilote les services : start pour démarrer, status pour l'état. Démarrer un service demande les droits admin (sudo).`,
-        `Après avoir démarré apache2 (avec sudo), contrôle son état avec l'action status : le service doit être « active (running) ».`,
-        `Pour le test final, donne à curl l'adresse localhost : si tout va bien, le HTML de la page par défaut d'Apache s'affiche dans le terminal.`,
+        `Il te faut la commande qui « pilote les services système » (voir « aide ») : son manuel liste les actions possibles, dont démarrer un service et afficher son état.`,
+        `Démarrer un service demande les droits administrateur (le même préfixe qu'à la mission 9) ; afficher son état, non. Le service doit être « active (running) ».`,
+        `Pour le test final, cherche dans « aide » la commande qui « interroge une URL » et donne-lui l'adresse localhost : le HTML de la page par défaut d'Apache doit s'afficher.`,
       ],
       setup() {},
       check(ctx) {
@@ -430,9 +430,9 @@ pour y écrire.
   💡 Exemple de page minimale :
      <h1>Portfolio MMI</h1>`),
       indices: [
-        `Le fichier appartient à root : sans sudo, nano refusera d'enregistrer. Préfixe bien la commande.`,
-        `Dans nano, écris une vraie petite page : au minimum une balise <h1> avec un titre, et le mot MMI dans le texte. Puis Ctrl+O pour enregistrer et Ctrl+X pour sortir.`,
-        `Après l'enregistrement, interroge de nouveau localhost avec curl : tu dois voir TON code HTML (avec ton <h1>) et non plus la page par défaut d'Apache.`,
+        `Il te faut la commande qui « ouvre un fichier dans l'éditeur de texte » (voir « aide »). Le fichier appartient à root : sans le préfixe administrateur de la mission 9, l'éditeur refusera d'enregistrer.`,
+        `Dans l'éditeur, écris une vraie petite page : au minimum une balise <h1> avec un titre, et le mot MMI dans le texte. Puis Ctrl+O pour enregistrer et Ctrl+X pour sortir.`,
+        `Après l'enregistrement, interroge de nouveau localhost comme à la mission 10 : tu dois voir TON code HTML (avec ton <h1>) et non plus la page par défaut d'Apache.`,
       ],
       setup() {},
       check(ctx) {
@@ -464,9 +464,9 @@ juste ce qu'il faut.
   💡 Bonus : le pipe « | » envoie le résultat d'une commande
      à la commande suivante.`),
       indices: [
-        `Trois commandes : « head » affiche le début d'un fichier, « tail » la fin, « wc » compte (word count). Chacune prend le chemin du fichier en argument.`,
-        `L'option -n, suivie d'un nombre, règle le nombre de lignes affichées par head et tail. Pour ne compter que les lignes avec wc, utilise l'option -l.`,
-        `Le fichier s'appelle stats_visites.txt et se trouve dans sae105 : lance sur ce chemin head (5 lignes), tail (3 lignes), puis wc (lignes seulement).`,
+        `Trois commandes : une qui « affiche les premières lignes », une qui « affiche les dernières lignes » et une qui « compte les lignes, mots et caractères ». Cherche-les dans « aide ».`,
+        `Leurs noms anglais évoquent la tête, la queue et le comptage de mots (« word count »). Chacune prend le chemin du fichier en argument.`,
+        `Le fichier est sae105/stats_visites.txt. Les manuels (man) donnent l'option qui règle le nombre de lignes affichées, et celle qui ne compte que les lignes : à chaque fois une lettre précédée d'un tiret.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -504,9 +504,9 @@ le travail d'une autre commande.
   💡 Le résultat de la recherche te donne le chemin complet :
      parfait pour le réutiliser ensuite !`),
       indices: [
-        `find explore un dossier ET tous ses sous-dossiers : on lui donne d'abord le dossier de départ, puis l'option -name suivie du motif. Les guillemets autour du motif sont importants.`,
-        `Pars du dossier projet_v2 avec le motif "*.png" : parmi les résultats, repère le chemin complet de logo_final.png.`,
-        `Recopie le chemin donné par find comme source de ton mv (vu à la mission 4), avec sae105/maquettes comme destination.`,
+        `Il te faut la commande qui « cherche des fichiers par leur NOM » (voir « aide ») : elle explore un dossier ET tous ses sous-dossiers.`,
+        `Son manuel indique l'ordre : d'abord le dossier de départ (projet_v2), puis l'option qui précise le nom, suivie du motif entre guillemets : "*.png".`,
+        `Parmi les résultats, repère le chemin complet de logo_final.png, puis déplace le fichier comme à la mission 4, avec sae105/maquettes comme destination.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -545,9 +545,9 @@ la mission 11).
 
   💡 L'éditeur crée le fichier s'il n'existe pas encore.`),
       indices: [
-        `Donne à nano le chemin du fichier en partant de ton dossier personnel (sae105/contenus/...). Une fenêtre d'édition s'ouvre par-dessus le terminal.`,
-        `Écris au moins 3 lignes (appuie sur Entrée pour changer de ligne) et glisse le mot MMI dans ton texte, puis bouton « Enregistrer » et « Quitter ».`,
-        `Si la mission ne se valide pas : vérifie avec cat que le fichier contient bien 3 lignes non vides ET le mot MMI, puis rouvre-le avec nano pour compléter.`,
+        `C'est le même éditeur qu'à la mission 11 (voir « aide » si tu as oublié son nom), mais cette fois sans préfixe administrateur : le fichier est dans ton dossier personnel.`,
+        `Donne-lui le chemin du fichier en partant de ton dossier personnel (sae105/contenus/...). Écris au moins 3 lignes (Entrée pour changer de ligne) avec le mot MMI, puis bouton « Enregistrer » et « Quitter ».`,
+        `Si la mission ne se valide pas : affiche le fichier pour vérifier qu'il contient bien 3 lignes non vides ET le mot MMI, puis rouvre-le dans l'éditeur pour compléter.`,
       ],
       setup() {},
       check(ctx) {
@@ -582,8 +582,8 @@ utilisent aussi la notation NUMÉRIQUE : 3 chiffres pour propriétaire / groupe 
   2. Contrôle le résultat en affichant les droits des fichiers`),
       indices: [
         `Additionne pour chaque catégorie : lecture+écriture = 4+2 = 6 ; lecture+exécution = 4+1 = 5 ; tout = 7 ; rien = 0.`,
-        `Le fichier confidentiel doit finir en -rw------- et le script en -rwxr-xr-x (vérifie avec la liste détaillée de chaque dossier).`,
-        `Avec chmod, donne d'abord les 3 chiffres, puis le chemin du fichier : 600 pour les notes du jury, 755 pour le script de partage.`,
+        `C'est la même commande qu'à la mission 8, mais avec 3 chiffres à la place du signe + : son manuel décrit la notation numérique.`,
+        `Donne d'abord les 3 chiffres, puis le chemin du fichier : 600 pour les notes du jury, 755 pour le script de partage. Vérifie : le fichier confidentiel doit finir en -rw------- et le script en -rwxr-xr-x.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -622,9 +622,9 @@ publie sur le web.
      LISIBLES par tout le monde : pas besoin d'être
      administrateur pour les lire.`),
       indices: [
-        `grep affiche les lignes d'un fichier qui contiennent un motif : on lui donne d'abord le motif, puis le fichier. Ici le motif est DocumentRoot et le fichier est /etc/apache2/apache2.conf.`,
+        `C'est la même commande de recherche dans le contenu qu'à la mission 7, mais sur un seul fichier : pas besoin de l'option récursive. Ici le motif est DocumentRoot et le fichier /etc/apache2/apache2.conf.`,
         `La ligne trouvée ressemble à « DocumentRoot /chemin/vers/dossier » : c'est ce chemin qu'il faut recopier.`,
-        `Enregistre ce chemin dans sae105/docroot.txt avec echo et >, comme le code de la mission 7. Le chemin commence par /var/...`,
+        `Enregistre ce chemin dans sae105/docroot.txt de la même façon que le code de la mission 7. Le chemin commence par /var/...`,
       ],
       setup() {},
       check(ctx) {
@@ -655,8 +655,8 @@ localhost/equipe.html !
   💡 Exemple minimal :  <h2>L'équipe MMI</h2>`),
       indices: [
         `Comme pour l'accueil (mission 11) : le dossier appartient à root, donc l'éditeur doit être ouvert avec le préfixe administrateur.`,
-        `Ouvre /var/www/html/equipe.html dans nano avec sudo, écris ta page avec une balise <h2>, enregistre, quitte.`,
-        `Pour le test final, donne à curl l'adresse localhost/equipe.html : tu dois voir TON code HTML. Si « 404 Not Found » : vérifie le nom exact du fichier en listant /var/www/html.`,
+        `Ouvre /var/www/html/equipe.html dans l'éditeur (en administrateur), écris ta page avec une balise <h2>, enregistre, quitte.`,
+        `Pour le test final, interroge l'adresse localhost/equipe.html comme à la mission 10 : tu dois voir TON code HTML. Si « 404 Not Found » : vérifie le nom exact du fichier en listant /var/www/html.`,
       ],
       setup() {},
       check(ctx) {
@@ -687,9 +687,9 @@ exécutable. Un dernier défi à la hauteur de tes nouveaux talents.
   💡 Tout ce qu'il faut savoir, tu l'as déjà appris.
      (Missions 8 et 9, si un doute persiste...)`),
       indices: [
-        `Deux étapes, déjà vues : d'abord donner le droit d'exécution au script (mission 8), ensuite le lancer avec les droits admin (mission 9).`,
-        `Donne d'abord le droit d'exécution au script avec chmod, comme à la mission 8, puis exécute-le avec le préfixe sudo ET le « ./ » devant le chemin.`,
-        `Pour le lancer : sudo, une espace, puis le chemin du script précédé de « ./ ». Si « Permission non accordée » : le chmod n'a pas été fait ; si « commande introuvable » : il manque le ./`,
+        `Deux étapes, déjà vues : d'abord donner le droit d'exécution au script (mission 8), ensuite le lancer avec les droits administrateur (mission 9).`,
+        `Donne d'abord le droit d'exécution au script comme à la mission 8, puis exécute-le avec le préfixe administrateur ET le « ./ » devant le chemin.`,
+        `Pour le lancer : le préfixe administrateur, une espace, puis le chemin du script précédé de « ./ ». Si « Permission non accordée » : le droit d'exécution n'a pas été donné ; si « commande introuvable » : il manque le ./`,
       ],
       setup(ctx) {
         const { fs } = ctx;

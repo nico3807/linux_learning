@@ -199,8 +199,9 @@ sudo ./scripts/validation_finale.sh
 - **Rien ne sort du navigateur** : aucune vraie commande n'est exécutée,
   aucun risque pour les postes.
 - Un étudiant bloqué doit épuiser ses 3 `indice` avant d'appeler :
-  le 3ᵉ indice décrit la démarche, sans jamais donner la ligne de
-  commande à taper (ni les consignes, ni les indices ne la donnent).
+  ni les consignes ni les indices ne nomment la commande à utiliser.
+  Les indices renvoient vers `aide` (ce que fait chaque commande) et
+  `man` (ses options) ; le 3ᵉ décrit la démarche la plus précise.
 - Les messages d'erreur contiennent souvent un 💡 : apprendre aux
   étudiants à LIRE les erreurs, c'est l'objectif caché du jeu.
 - Le nombre d'indices utilisés figure sur le certificat : il peut servir
