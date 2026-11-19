@@ -41,6 +41,7 @@ apprends à te repérer.
   2. Liste le contenu de ton dossier personnel pour découvrir
      ce qui s'y trouve.
 
+  💡 Liste des commandes disponibles : aide
   💡 Pour de l'aide sur une commande : man <commande>
   💡 Bloqué(e) ? Tape : indice`),
       indices: [
@@ -81,7 +82,7 @@ On raconte qu'un enseignant de culture numérique a caché le mot
 de passe du labo multimédia dans un fichier... invisible !
 
 Sous Linux, les fichiers dont le nom commence par un point « . »
-sont cachés : un simple ls ne les montre pas.
+sont cachés : un simple listage ne les montre pas.
 
   OBJECTIFS :
   1. Déplace-toi dans le dossier cours/culture_numerique
@@ -240,9 +241,9 @@ il n'y a PAS de corbeille. Supprimé = perdu pour toujours !
   OBJECTIFS :
   1. Crée le fichier  ~/sae105/contenus/slogan.txt  contenant
      une première ligne de slogan de ton invention
-     (utilise echo et la redirection >)
+     (avec la redirection >)
   2. AJOUTE ensuite une deuxième ligne avec >>
-  3. Vérifie le résultat avec cat : le fichier doit contenir
+  3. Vérifie le résultat : le fichier doit contenir
      au moins 2 lignes.
 
   ⚠️  Attention : un > de trop et tu écrases tout !`),
@@ -276,7 +277,8 @@ chercher À L'INTÉRIEUR des fichiers.
      mot   CODE   (cherche récursivement dans tous les fichiers)
   2. Affiche le fichier trouvé pour lire le code d'activation
   3. Enregistre le code (et seulement le code) dans le fichier
-     ~/sae105/code_serveur.txt   (avec echo et >)`),
+     ~/sae105/code_serveur.txt   (avec une redirection,
+     comme à la mission 6)`),
       indices: [
         `grep cherche un texte (le motif) dans des fichiers : on lui donne d'abord le motif, puis l'endroit où chercher. Pour fouiller tout un dossier et ses sous-dossiers, ajoute la même option récursive que rm.`,
         `Cherche le mot CODE, récursivement, dans le dossier cours : la réponse t'indiquera le fichier qui le contient. Il ne restera qu'à le lire avec cat.`,
@@ -344,22 +346,25 @@ echo ">>> Serveur prêt pour l'installation d'Apache ! <<<"
     /* ---------------- MISSION 9 ---------------- */
     {
       id: 9,
-      titre: 'Devenir super-utilisateur (sudo & apt)',
+      titre: 'Devenir super-utilisateur',
       fichier: `${H}/missions/mission_09.txt`,
       texte: box('MISSION 9 — INSTALLER UN LOGICIEL', `Il est temps d'installer le serveur web Apache pour héberger
 ton site de SAÉ. Mais installer un logiciel modifie le système :
 il faut les droits d'administrateur !
 
-Sous Linux, on préfixe la commande par « sudo »
-(Super User DO) pour l'exécuter en tant qu'administrateur.
+Sous Linux, un préfixe spécial placé devant une commande
+permet de l'exécuter en tant qu'administrateur. Sous Ubuntu,
+les logiciels (les « paquets ») s'installent avec un
+gestionnaire de paquets.
 
   OBJECTIFS :
   1. Mets à jour la liste des paquets disponibles
-     (commande apt, action « update », avec sudo)
+     (en administrateur)
   2. Installe le paquet   apache2
-     (commande apt, action « install », avec sudo)
+     (en administrateur)
 
-  ⚠️  Sans sudo, le système refusera : c'est normal, essaie !`),
+  ⚠️  Sans les droits d'administrateur, le système refusera :
+     c'est normal, essaie !`),
       indices: [
         `apt est le gestionnaire de paquets de Debian/Ubuntu. Deux actions t'intéressent : « update » (rafraîchir la liste) puis « install » suivie du nom du paquet.`,
         `N'oublie pas le préfixe sudo devant CHAQUE commande apt, sinon : permission refusée.`,
@@ -379,14 +384,13 @@ Sous Linux, on préfixe la commande par « sudo »
       fichier: `${H}/missions/mission_10.txt`,
       texte: box('MISSION 10 — DÉMARRER LE SERVEUR WEB', `Apache est installé, mais un serveur installé n'est pas
 forcément DÉMARRÉ. Les services système se pilotent avec
-la commande systemctl.
+une commande dédiée.
 
   OBJECTIFS :
-  1. Démarre le service   apache2   (action « start », avec sudo)
-  2. Vérifie son état     (action « status », sudo inutile ici)
-  3. Teste le serveur en récupérant la page d'accueil :
-     la commande curl permet d'interroger une URL —
-     essaie sur   localhost
+  1. Démarre le service   apache2   (en administrateur)
+  2. Vérifie son état     (pas besoin d'être administrateur)
+  3. Teste le serveur en récupérant sa page d'accueil depuis
+     le terminal, à l'adresse   localhost
 
   💡 localhost = « cette machine » (127.0.0.1).`),
       indices: [
@@ -408,19 +412,20 @@ la commande systemctl.
       fichier: `${H}/missions/mission_11.txt`,
       texte: box('MISSION 11 — PUBLIER SA PAGE WEB', `La page par défaut d'Apache, c'est joli, mais le client attend
 SA page ! Apache sert les fichiers du dossier /var/www/html —
-qui appartient à root : il faudra sudo pour y écrire.
+qui appartient à root : il faudra les droits d'administrateur
+pour y écrire.
 
   OBJECTIFS :
-  1. Ouvre /var/www/html/index.html dans l'éditeur nano
-     (avec sudo !)
+  1. Ouvre /var/www/html/index.html dans l'éditeur de texte
+     du terminal, en administrateur
   2. Remplace le contenu par ta propre page HTML. Elle doit
      contenir au moins :
         - un titre principal  <h1> ... </h1>
         - le mot   MMI   quelque part
-  3. Enregistre, quitte nano, puis interroge à nouveau ton
+  3. Enregistre, quitte l'éditeur, puis interroge à nouveau ton
      serveur (localhost) pour vérifier qu'il renvoie TA page
 
-  💡 Dans nano : Ctrl+O (ou bouton) = enregistrer,
+  💡 Dans l'éditeur : Ctrl+O (ou bouton) = enregistrer,
      Ctrl+X = quitter.
   💡 Exemple de page minimale :
      <h1>Portfolio MMI</h1>`),
@@ -444,11 +449,11 @@ qui appartient à root : il faudra sudo pour y écrire.
     /* ---------------- MISSION 12 ---------------- */
     {
       id: 12,
-      titre: 'Analyser des fichiers (head, tail, wc)',
+      titre: 'Analyser des fichiers',
       fichier: `${H}/missions/mission_12.txt`,
       texte: box('MISSION 12 — ANALYSER DES FICHIERS', `Ton site de SAÉ attire du monde ! L'admin t'a déposé le relevé
 de fréquentation dans ~/sae105/stats_visites.txt. Le fichier est
-long : inutile de tout afficher avec cat, Linux sait extraire
+long : inutile de tout afficher, Linux sait extraire
 juste ce qu'il faut.
 
   OBJECTIFS :
@@ -481,19 +486,19 @@ juste ce qu'il faut.
     /* ---------------- MISSION 13 ---------------- */
     {
       id: 13,
-      titre: 'Retrouver ses fichiers (find)',
+      titre: 'Retrouver ses fichiers',
       fichier: `${H}/missions/mission_13.txt`,
       texte: box('MISSION 13 — RETROUVER SES FICHIERS', `Catastrophe : ton binôme a livré le dossier ~/projet_v2 tout en
 vrac, avec des sous-dossiers partout. Quelque part là-dedans se
 cache le logo définitif du client : logo_final.png.
 
-Tu as déjà utilisé grep pour chercher DANS les fichiers.
+Tu as déjà cherché DANS le contenu des fichiers (mission 7).
 Cette fois il faut chercher des fichiers PAR LEUR NOM : c'est
-le travail de la commande find.
+le travail d'une autre commande.
 
   OBJECTIFS :
   1. Liste tous les fichiers .png cachés dans ~/projet_v2
-     (find accepte les jokers :  "*.png")
+     (les jokers fonctionnent :  "*.png")
   2. Déplace logo_final.png dans   ~/sae105/maquettes
 
   💡 Le résultat de la recherche te donne le chemin complet :
@@ -523,21 +528,22 @@ le travail de la commande find.
     /* ---------------- MISSION 14 ---------------- */
     {
       id: 14,
-      titre: 'Rédiger avec l\'éditeur nano',
+      titre: 'Rédiger avec l\'éditeur de texte',
       fichier: `${H}/missions/mission_14.txt`,
-      texte: box('MISSION 14 — RÉDIGER AVEC NANO', `Le site du client aura une page « À propos ». Écris ta biographie
-de créateur/créatrice ! Les redirections echo c'est bien pour une
-ligne, mais pour un vrai texte, on ouvre un éditeur : nano.
+      texte: box('MISSION 14 — RÉDIGER AVEC L\'ÉDITEUR', `Le site du client aura une page « À propos ». Écris ta biographie
+de créateur/créatrice ! Les redirections, c'est bien pour une
+ligne, mais pour un vrai texte, on ouvre un éditeur (celui de
+la mission 11).
 
   OBJECTIFS :
-  1. Ouvre le fichier  ~/sae105/contenus/bio.txt  dans nano
+  1. Ouvre le fichier  ~/sae105/contenus/bio.txt  dans l'éditeur
   2. Rédige ta mini-biographie :
        - AU MOINS 3 lignes de texte
        - elle doit mentionner   MMI   quelque part
   3. Enregistre (Ctrl+O ou bouton) et quitte (Ctrl+X)
-  4. Vérifie ton œuvre avec cat
+  4. Affiche ton œuvre dans le terminal pour la vérifier
 
-  💡 nano crée le fichier s'il n'existe pas encore.`),
+  💡 L'éditeur crée le fichier s'il n'existe pas encore.`),
       indices: [
         `Donne à nano le chemin du fichier en partant de ton dossier personnel (sae105/contenus/...). Une fenêtre d'édition s'ouvre par-dessus le terminal.`,
         `Écris au moins 3 lignes (appuie sur Entrée pour changer de ligne) et glisse le mot MMI dans ton texte, puis bouton « Enregistrer » et « Quitter ».`,
@@ -559,8 +565,8 @@ ligne, mais pour un vrai texte, on ouvre un éditeur : nano.
       id: 15,
       titre: 'Les droits en notation numérique',
       fichier: `${H}/missions/mission_15.txt`,
-      texte: box('MISSION 15 — DROITS EN NOTATION NUMÉRIQUE', `Tu connais chmod +x. Les pros utilisent aussi la notation
-NUMÉRIQUE : 3 chiffres pour propriétaire / groupe / autres.
+      texte: box('MISSION 15 — DROITS EN NOTATION NUMÉRIQUE', `Tu sais déjà rendre un fichier exécutable (mission 8). Les pros
+utilisent aussi la notation NUMÉRIQUE : 3 chiffres pour propriétaire / groupe / autres.
 
     r = 4    w = 2    x = 1    (on additionne)
     7 = rwx    6 = rw-    5 = r-x    4 = r--    0 = ---
@@ -573,7 +579,7 @@ NUMÉRIQUE : 3 chiffres pour propriétaire / groupe / autres.
 
   OBJECTIFS :
   1. Applique les bons droits numériques à ces deux fichiers
-  2. Contrôle le résultat avec ls -l`),
+  2. Contrôle le résultat en affichant les droits des fichiers`),
       indices: [
         `Additionne pour chaque catégorie : lecture+écriture = 4+2 = 6 ; lecture+exécution = 4+1 = 5 ; tout = 7 ; rien = 0.`,
         `Le fichier confidentiel doit finir en -rw------- et le script en -rwxr-xr-x (vérifie avec la liste détaillée de chaque dossier).`,
@@ -608,12 +614,13 @@ publie sur le web.
 
   OBJECTIFS :
   1. Cherche la ligne   DocumentRoot   dans le fichier de
-     configuration d'Apache (inutile de tout lire : grep !)
+     configuration d'Apache (inutile de tout afficher !)
   2. Enregistre le CHEMIN trouvé (et seulement le chemin) dans
-     ~/sae105/docroot.txt   (avec echo et >)
+     ~/sae105/docroot.txt   (avec une redirection)
 
   💡 Les fichiers de /etc appartiennent à root, mais ils sont
-     LISIBLES par tout le monde : pas besoin de sudo pour lire.`),
+     LISIBLES par tout le monde : pas besoin d'être
+     administrateur pour les lire.`),
       indices: [
         `grep affiche les lignes d'un fichier qui contiennent un motif : on lui donne d'abord le motif, puis le fichier. Ici le motif est DocumentRoot et le fichier est /etc/apache2/apache2.conf.`,
         `La ligne trouvée ressemble à « DocumentRoot /chemin/vers/dossier » : c'est ce chemin qu'il faut recopier.`,
@@ -639,7 +646,7 @@ page web : /var/www/html/equipe.html sera servie à l'adresse
 localhost/equipe.html !
 
   OBJECTIFS :
-  1. Crée la page   /var/www/html/equipe.html   avec nano
+  1. Crée la page   /var/www/html/equipe.html
      Elle doit contenir au moins un sous-titre <h2> ... </h2>
   2. Vérifie qu'elle est bien en ligne à l'adresse
      localhost/equipe.html
