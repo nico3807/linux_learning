@@ -34,11 +34,11 @@ Le jeu est 100 % statique (HTML/CSS/JavaScript, sans framework ni build) :
 | 7 | Chercher dans les contenus | `grep -r` |
 | 8 | Droits et exécution | `ls -l`, `chmod +x`, `./script.sh` |
 | 9 | Devenir administrateur | `sudo`, `apt update`, `apt install` |
-| 10 | Serveur web | `systemctl start/status`, `curl` |
+| 10 | Serveur web (panne à diagnostiquer) | `systemctl start/stop/status`, `curl`, port 80 occupé |
 | 11 | Publier sa page | `sudo nano`, HTML dans `/var/www/html` |
 | 12 | Analyser des fichiers | `head`, `tail`, `wc`, pipes `\|` |
 | 13 | Retrouver ses fichiers | `find -name`, jokers `*` |
-| 14 | Rédiger avec l'éditeur | `nano` (création et édition) |
+| 14 | Rédiger avec l'éditeur | `nano` (création et édition), vérification avec `cat` |
 | 15 | Droits numériques | `chmod 600/644/755`, lecture de `ls -l` |
 | 16 | Configuration du serveur | `grep` dans `/etc/apache2/apache2.conf`, DocumentRoot |
 | 17 | Site multi-pages | seconde page dans `/var/www/html`, `curl localhost/...` |

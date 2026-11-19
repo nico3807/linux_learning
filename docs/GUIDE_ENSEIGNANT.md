@@ -99,9 +99,16 @@ l'option `-r`.
 ```bash
 echo "Mon slogan" > sae105/contenus/slogan.txt
 echo "Deuxième ligne" >> sae105/contenus/slogan.txt
+cat sae105/contenus/slogan.txt
 ```
-Validation : fichier d'au moins 2 lignes **et** usage réel de `>>`
-(deux `>` successifs écrasent : le jeu ne valide pas, c'est le piège).
+Validation : fichier d'au moins 2 lignes, usage réel de `>>` **et**
+affichage du fichier (`cat`) après la dernière écriture (deux `>`
+successifs écrasent : le jeu ne valide pas, c'est le piège).
+
+> Règle commune aux missions 6, 11, 14, 15 et 17 : la vérification
+> demandée (`cat`, `curl`, `ls -l`) n'est prise en compte que si elle a
+> lieu **après** la dernière modification. Une mission ne se valide donc
+> jamais à l'enregistrement dans `nano`.
 
 ### Mission 7 — grep
 ```bash
@@ -125,12 +132,23 @@ sudo apt install apache2
 ```
 Sans `sudo` : refus. `install` avant `update` : refus (liste périmée).
 
-### Mission 10 — Démarrer le serveur
+### Mission 10 — Démarrer le serveur (diagnostic de panne)
+Au début de la mission, un serveur **nginx** « laissé par un ancien
+stagiaire » occupe déjà le port 80 : Apache refuse de démarrer.
 ```bash
+sudo systemctl start apache2    # → Job for apache2.service failed...
+systemctl status apache2        # → failed : Address already in use (port 80)
+curl localhost                  # → « Welcome to nginx! » : le coupable
+systemctl status nginx          # (facultatif) nginx est actif
+sudo systemctl stop nginx
 sudo systemctl start apache2
-systemctl status apache2
-curl localhost
+systemctl status apache2        # → active (running)
+curl localhost                  # → page par défaut d'Apache
 ```
+Validation : Apache actif, **état vérifié** (`status` affichant
+`active (running)`) **et** page d'Apache récupérée avec `curl`.
+Démarche visée : lire un message d'erreur, consulter l'état d'un service,
+comprendre qu'un port ne sert qu'un seul serveur à la fois.
 
 ### Mission 11 — Page web personnelle
 ```bash
@@ -162,7 +180,10 @@ mv projet_v2/exports/hd/logo_final.png sae105/maquettes
 ```bash
 nano sae105/contenus/bio.txt
 # → au moins 3 lignes non vides, dont le mot MMI quelque part
+cat sae105/contenus/bio.txt
 ```
+Validation : bio conforme **et** affichée avec `cat` après le dernier
+enregistrement.
 
 ### Mission 15 — Droits numériques
 ```bash
@@ -170,6 +191,9 @@ chmod 600 sae105/notes_jury.txt
 chmod 755 scripts/partage.sh
 ls -l sae105 scripts
 ```
+Validation : droits 600 et 755 **et** contrôlés avec `ls -l` après les
+`chmod`. Les consignes ne donnent plus les chiffres : l'étudiant les
+calcule avec le tableau r=4, w=2, x=1.
 
 ### Mission 16 — Configuration Apache
 ```bash
@@ -184,6 +208,8 @@ sudo nano /var/www/html/equipe.html
 curl localhost/equipe.html
 ```
 `curl` sur un nom de fichier erroné renvoie une 404 pédagogique.
+Validation : la page contient `<h2>` **et** a été récupérée avec `curl`
+après le dernier enregistrement (idem mission 11 pour l'accueil).
 
 ### Mission 18 — Validation finale (révision)
 ```bash

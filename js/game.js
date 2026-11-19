@@ -110,6 +110,7 @@ const Game = (() => {
         usedAppend: false,
         flags: {},
         services: {},
+        verif: { cat: {}, curl: {}, perms: {} },
         history: [],
       };
       this.buildWorld();

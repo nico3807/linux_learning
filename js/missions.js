@@ -11,6 +11,17 @@ const MISSIONS = (() => {
   const H = '/home/etudiant';
   const SECRET_CODE = 'KERNEL-42';
 
+  /**
+   * Ce que l'étudiant a réellement vérifié (voir verif() dans commands.js) :
+   * kind = 'cat' (contenu lu), 'curl' (page servie) ou 'perms' (droits vus
+   * avec ls -l). Comparé à l'état actuel, cela garantit que la vérification
+   * a eu lieu APRÈS la dernière modification du fichier.
+   */
+  function vu(ctx, kind, path) {
+    const v = ctx.state.verif;
+    return v && v[kind] ? v[kind][path] : undefined;
+  }
+
   /** Encadre le texte d'une mission. */
   function box(title, body) {
     const line = '═'.repeat(58);
@@ -250,14 +261,15 @@ il n'y a PAS de corbeille. Supprimé = perdu pour toujours !
       indices: [
         `Il te faut la commande qui « affiche un texte » (cherche-la dans « aide »). Suivie de > et d'un nom de fichier, son texte part dans le fichier au lieu de l'écran.`,
         `Pour la première ligne, envoie ton slogan (entre guillemets) dans sae105/contenus/slogan.txt avec >. Pour la deuxième, même principe mais avec >> pour ajouter sans écraser.`,
-        `Si ton fichier ne contient qu'une ligne, c'est que tu as utilisé > deux fois (il écrase). Recommence : d'abord >, puis >>. Affiche ensuite le contenu du fichier pour contrôler.`,
+        `Si ton fichier ne contient qu'une ligne, c'est que tu as utilisé > deux fois (il écrase). Recommence : d'abord >, puis >>. La mission ne se valide qu'une fois le contenu du fichier affiché dans le terminal.`,
       ],
       setup() {},
       check(ctx) {
         const node = ctx.fs.get(`${H}/sae105/contenus/slogan.txt`);
         if (!node || node.type !== 'file') return false;
         const lines = node.content.split('\n').filter(l => l.trim() !== '');
-        return lines.length >= 2 && ctx.state.usedAppend;
+        return lines.length >= 2 && ctx.state.usedAppend
+          && vu(ctx, 'cat', `${H}/sae105/contenus/slogan.txt`) === node.content;
       },
       bravo: `Les redirections sont dans la poche ! > pour écrire,\n>> pour ajouter. Un outil que tu utiliseras sans arrêt.`,
     },
@@ -388,21 +400,30 @@ une commande dédiée.
 
   OBJECTIFS :
   1. Démarre le service   apache2   (en administrateur)
-  2. Vérifie son état     (pas besoin d'être administrateur)
+  2. Vérifie qu'il est bien actif : son état doit afficher
+     « active (running) »
   3. Teste le serveur en récupérant sa page d'accueil depuis
-     le terminal, à l'adresse   localhost
+     le terminal, à l'adresse   localhost : c'est bien la page
+     d'Apache qui doit répondre
 
+  ⚠️  Un ancien stagiaire a fait des essais sur ce serveur...
+     sans forcément tout ranger derrière lui.
   💡 localhost = « cette machine » (127.0.0.1).`),
       indices: [
-        `Il te faut la commande qui « pilote les services système » (voir « aide ») : son manuel liste les actions possibles, dont démarrer un service et afficher son état.`,
-        `Démarrer un service demande les droits administrateur (le même préfixe qu'à la mission 9) ; afficher son état, non. Le service doit être « active (running) ».`,
-        `Pour le test final, cherche dans « aide » la commande qui « interroge une URL » et donne-lui l'adresse localhost : le HTML de la page par défaut d'Apache doit s'afficher.`,
+        `Il te faut la commande qui « pilote les services système » (voir « aide »). Si le démarrage échoue, affiche l'état détaillé du service : ses dernières lignes expliquent pourquoi.`,
+        `« Address already in use » : le port 80 est déjà occupé par un autre programme. Interroge localhost depuis le terminal : la page qui répond te dira QUI occupe la place.`,
+        `Un autre serveur web tourne déjà (son nom est dans la page qui répond). Arrête-le avec la même commande de pilotage des services, en administrateur, puis redémarre apache2, vérifie son état et interroge à nouveau localhost.`,
       ],
-      setup() {},
-      check(ctx) {
-        return ctx.state.services.apache2 === 'running' && ctx.state.flags.curledLocalhost;
+      setup(ctx) {
+        // Le serveur nginx laissé par le stagiaire occupe déjà le port 80
+        if (ctx.state.services.nginx === undefined) ctx.state.services.nginx = 'running';
       },
-      bravo: `Ton serveur web tourne et répond ! systemctl start/status/stop :\nle quotidien de l'administrateur système.`,
+      check(ctx) {
+        return ctx.state.services.apache2 === 'running'
+          && !!ctx.state.flags.apacheStatusOk
+          && vu(ctx, 'curl', '/var/www/html/index.html') !== undefined;
+      },
+      bravo: `Panne diagnostiquée et réparée ! Un port ne peut servir qu'à un seul\nserveur à la fois. Lire l'état d'un service, arrêter le fautif,\nredémarrer le bon : le quotidien de l'administrateur système.`,
     },
 
     /* ---------------- MISSION 11 ---------------- */
@@ -441,7 +462,7 @@ pour y écrire.
         const c = node.content;
         return /<h1[\s>]/i.test(c) && /mmi/i.test(c)
           && !c.includes('Apache2 Ubuntu Default Page')
-          && ctx.state.flags.curledCustomPage;
+          && vu(ctx, 'curl', '/var/www/html/index.html') === c;
       },
       bravo: `TA page est en ligne (sur ton serveur d'entraînement) !\nÉditer des fichiers système avec sudo nano : un grand classique.`,
     },
@@ -547,7 +568,7 @@ la mission 11).
       indices: [
         `C'est le même éditeur qu'à la mission 11 (voir « aide » si tu as oublié son nom), mais cette fois sans préfixe administrateur : le fichier est dans ton dossier personnel.`,
         `Donne-lui le chemin du fichier en partant de ton dossier personnel (sae105/contenus/...). Écris au moins 3 lignes (Entrée pour changer de ligne) avec le mot MMI, puis bouton « Enregistrer » et « Quitter ».`,
-        `Si la mission ne se valide pas : affiche le fichier pour vérifier qu'il contient bien 3 lignes non vides ET le mot MMI, puis rouvre-le dans l'éditeur pour compléter.`,
+        `La mission ne se valide qu'une fois ton texte affiché dans le terminal, avec la commande qui « affiche le contenu d'un fichier » (mission 2). S'il manque quelque chose (3 lignes non vides, le mot MMI), rouvre le fichier dans l'éditeur, complète-le, puis affiche-le de nouveau.`,
       ],
       setup() {},
       check(ctx) {
@@ -555,7 +576,8 @@ la mission 11).
         const node = ctx.fs.get(`${H}/sae105/contenus/bio.txt`);
         if (!node || node.type !== 'file') return false;
         const lines = node.content.split('\n').filter(l => l.trim() !== '');
-        return lines.length >= 3 && /mmi/i.test(node.content);
+        return lines.length >= 3 && /mmi/i.test(node.content)
+          && vu(ctx, 'cat', `${H}/sae105/contenus/bio.txt`) === node.content;
       },
       bravo: `Belle plume ! nano est l'éditeur passe-partout des serveurs :\ntu le retrouveras sur toutes les machines Linux.`,
     },
@@ -573,9 +595,9 @@ utilisent aussi la notation NUMÉRIQUE : 3 chiffres pour propriétaire / groupe 
 
   Deux fichiers t'attendent :
   - ~/sae105/notes_jury.txt   → CONFIDENTIEL : toi seul(e) dois
-    pouvoir le lire et l'écrire, rien pour les autres  (6-0-0)
+    pouvoir le lire et l'écrire, rien pour les autres
   - ~/scripts/partage.sh      → script à partager : tout le monde
-    peut le lire et l'exécuter, toi seul(e) peux l'écrire (7-5-5)
+    peut le lire et l'exécuter, toi seul(e) peux l'écrire
 
   OBJECTIFS :
   1. Applique les bons droits numériques à ces deux fichiers
@@ -583,7 +605,7 @@ utilisent aussi la notation NUMÉRIQUE : 3 chiffres pour propriétaire / groupe 
       indices: [
         `Additionne pour chaque catégorie : lecture+écriture = 4+2 = 6 ; lecture+exécution = 4+1 = 5 ; tout = 7 ; rien = 0.`,
         `C'est la même commande qu'à la mission 8, mais avec 3 chiffres à la place du signe + : son manuel décrit la notation numérique.`,
-        `Donne d'abord les 3 chiffres, puis le chemin du fichier : 600 pour les notes du jury, 755 pour le script de partage. Vérifie : le fichier confidentiel doit finir en -rw------- et le script en -rwxr-xr-x.`,
+        `Donne d'abord les 3 chiffres, puis le chemin du fichier : 600 pour les notes du jury, 755 pour le script de partage. La mission ne se valide qu'une fois les droits des deux fichiers affichés (liste détaillée, comme à la mission 8) : -rw------- et -rwxr-xr-x.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -597,7 +619,9 @@ utilisent aussi la notation NUMÉRIQUE : 3 chiffres pour propriétaire / groupe 
       check(ctx) {
         const a = ctx.fs.get(`${H}/sae105/notes_jury.txt`);
         const b = ctx.fs.get(`${H}/scripts/partage.sh`);
-        return !!a && !!b && a.perms === '600' && b.perms === '755';
+        return !!a && !!b && a.perms === '600' && b.perms === '755'
+          && vu(ctx, 'perms', `${H}/sae105/notes_jury.txt`) === '600'
+          && vu(ctx, 'perms', `${H}/scripts/partage.sh`) === '755';
       },
       bravo: `600, 644, 755 : ces trois nombres vont te suivre toute ta vie\nde webmaster — ce sont les réglages types d'un serveur web !`,
     },
@@ -662,7 +686,8 @@ localhost/equipe.html !
       check(ctx) {
         const node = ctx.fs.get('/var/www/html/equipe.html');
         if (!node || node.type !== 'file') return false;
-        return /<h2[\s>]/i.test(node.content) && ctx.state.flags.curledEquipePage;
+        return /<h2[\s>]/i.test(node.content)
+          && vu(ctx, 'curl', '/var/www/html/equipe.html') === node.content;
       },
       bravo: `Un site multi-pages ! Tu viens de comprendre le lien direct\nentre les fichiers du serveur et les URL du navigateur.`,
     },

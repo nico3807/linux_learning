@@ -65,6 +65,19 @@ const Shell = (() => {
     return { abs, content: node.content };
   }
 
+  /* ---------- Vérifications faites par l'étudiant ----------
+   * Mémorise ce que l'étudiant a réellement affiché : contenu lu avec
+   * cat, page servie par curl, droits vus avec ls -l. Les missions
+   * comparent avec l'état actuel : une vérification faite AVANT la
+   * dernière modification du fichier ne compte donc pas. */
+  function verif(state) {
+    if (!state.verif) state.verif = { cat: {}, curl: {}, perms: {} };
+    return state.verif;
+  }
+
+  /** Page d'accueil par défaut de nginx (serveur laissé par le stagiaire, mission 10). */
+  const NGINX_PAGE = '<!DOCTYPE html>\n<html><head><title>Welcome to nginx!</title></head>\n<body>\n<h1>Welcome to nginx!</h1>\n<p>If you see this page, the nginx web server is successfully installed and working.</p>\n</body></html>\n';
+
   /* ============================================================
    * DÉFINITION DES COMMANDES
    * Chaque commande : { desc, usage, man, run(ctx, args) }
@@ -182,6 +195,8 @@ const Shell = (() => {
             const child = src[name];
             const cls = child.type === 'dir' ? 'dir' : (ctx.fs.isExecutable(child) ? 'exec' : null);
             if (long) {
+              const full = node.type === 'dir' ? (abs === '/' ? '' : abs) + '/' + name : abs;
+              verif(ctx.state).perms[full] = child.perms;
               const size = child.type === 'file' ? String(child.content.length) : '4096';
               ctx.sink.push(`${ctx.fs.permString(child)} ${child.owner.padEnd(8)} ${size.padStart(6)} `);
               ctx.sink.push(name, cls);
@@ -235,6 +250,7 @@ const Shell = (() => {
           const r = readFileArg(ctx, a, 'cat');
           if (r.error) { ctx.sink.line(r.error, 'error'); continue; }
           ctx.state.catted.add(r.abs);
+          verif(ctx.state).cat[r.abs] = r.content;
           ctx.sink.push(r.content.endsWith('\n') || r.content === '' ? r.content : r.content + '\n');
         }
       },
@@ -579,35 +595,65 @@ const Shell = (() => {
       usage: 'systemctl <start|stop|status> <service>',
       man: 'Contrôle systemd :\n    start   démarre un service (droits admin requis)\n    stop    arrête un service (droits admin requis)\n    status  affiche l\'état du service',
       run(ctx, args) {
-        const [action, service] = args;
-        if (!action || !service) { ctx.sink.line('systemctl: utilisation : systemctl <start|stop|status> <service>', 'error'); return; }
-        if (service !== 'apache2') {
+        const [action, rawService] = args;
+        if (!action || !rawService) { ctx.sink.line('systemctl: utilisation : systemctl <start|stop|status> <service>', 'error'); return; }
+        const service = rawService.replace(/\.service$/, '');
+        const S = ctx.state.services;
+        const DESC = {
+          apache2: 'The Apache HTTP Server',
+          nginx: 'A high performance web server and a reverse proxy server',
+        };
+        // Un service n'existe que s'il est installé (nginx : laissé par le stagiaire, mission 10)
+        const installed = service === 'apache2' ? !!ctx.state.flags.apacheInstalled
+          : service === 'nginx' ? S.nginx !== undefined : false;
+        if (!installed) {
           ctx.sink.line(`Unit ${service}.service could not be found.`, 'error');
-          ctx.sink.line('   💡 Le seul service de ce jeu est « apache2 ».', 'hint');
+          ctx.sink.line(service === 'apache2'
+            ? '   💡 Apache ne semble pas encore installé...'
+            : '   💡 Vérifie le nom exact du service.', 'hint');
           return;
         }
-        if (!ctx.state.flags.apacheInstalled) {
-          ctx.sink.line('Unit apache2.service could not be found.', 'error');
-          ctx.sink.line('   💡 Apache ne semble pas encore installé...', 'hint');
-          return;
-        }
+        const other = service === 'apache2' ? 'nginx' : 'apache2';
         if (action === 'status') {
-          const running = ctx.state.services.apache2 === 'running';
-          ctx.sink.line('● apache2.service - The Apache HTTP Server');
+          const st = S[service];
+          ctx.sink.line(`${st === 'running' ? '●' : st === 'failed' ? '×' : '○'} ${service}.service - ${DESC[service]}`);
+          ctx.sink.line(`     Loaded: loaded (/usr/lib/systemd/system/${service}.service; enabled)`);
           ctx.sink.push('     Active: ');
-          ctx.sink.push(running ? 'active (running)' : 'inactive (dead)', running ? 'success' : 'error');
+          if (st === 'running') ctx.sink.push('active (running)', 'success');
+          else if (st === 'failed') ctx.sink.push('failed (Result: exit-code)', 'error');
+          else ctx.sink.push('inactive (dead)', 'error');
           ctx.sink.push('\n');
-          ctx.sink.line('     Docs: https://httpd.apache.org/docs/');
+          if (st === 'failed') {
+            if (service === 'apache2') {
+              ctx.sink.line('  apache2[2731]: (98)Address already in use: AH00072: make_sock: could not bind to address 0.0.0.0:80');
+              ctx.sink.line('  apache2[2731]: no listening sockets available, shutting down');
+            } else {
+              ctx.sink.line('  nginx[1984]: bind() to 0.0.0.0:80 failed (98: Address already in use)');
+            }
+          }
+          if (service === 'apache2' && st === 'running') ctx.state.flags.apacheStatusOk = true;
           return;
         }
         if (action === 'start' || action === 'stop' || action === 'restart') {
           if (ctx.user !== 'root') {
-            ctx.sink.line(`Failed to ${action} apache2.service: Access denied`, 'error');
+            ctx.sink.line(`Failed to ${action} ${service}.service: Access denied`, 'error');
             ctx.sink.line('   💡 Démarrer ou arrêter un service demande les droits administrateur...', 'hint');
             return;
           }
-          ctx.state.services.apache2 = action === 'stop' ? 'stopped' : 'running';
-          ctx.sink.line(`✔ apache2.service : ${action === 'stop' ? 'arrêté' : 'démarré'}.`, 'success');
+          if (action === 'stop') {
+            S[service] = 'stopped';
+            ctx.sink.line(`✔ ${service}.service : arrêté.`, 'success');
+            return;
+          }
+          // Deux serveurs web ne peuvent pas écouter le même port 80
+          if (S[other] === 'running') {
+            S[service] = 'failed';
+            ctx.sink.line(`Job for ${service}.service failed because the control process exited with error code.`, 'error');
+            ctx.sink.line('   💡 Le démarrage a échoué : l\'état détaillé du service indique pourquoi.', 'hint');
+            return;
+          }
+          S[service] = 'running';
+          ctx.sink.line(`✔ ${service}.service : démarré.`, 'success');
           return;
         }
         ctx.sink.line(`systemctl: action inconnue « ${action} ». Utilise start, stop ou status.`, 'error');
@@ -639,6 +685,12 @@ const Shell = (() => {
           return;
         }
         if (ctx.state.services.apache2 !== 'running') {
+          // Le serveur nginx laissé par le stagiaire répond à la place d'Apache (mission 10)
+          if (ctx.state.services.nginx === 'running') {
+            if (path === '/' || path === '' || path === '/index.html') ctx.sink.push(NGINX_PAGE);
+            else ctx.sink.line('<html><head><title>404 Not Found</title></head><body><center><h1>404 Not Found</h1></center><hr><center>nginx/1.24.0 (Ubuntu)</center></body></html>');
+            return;
+          }
           ctx.sink.line('curl: (7) Failed to connect to localhost port 80: Connexion refusée', 'error');
           ctx.sink.line('   💡 Y a-t-il bien un serveur web installé ET démarré ?', 'hint');
           return;
@@ -653,6 +705,7 @@ const Shell = (() => {
         }
         const content = page.content;
         ctx.sink.push(content.endsWith('\n') ? content : content + '\n');
+        verif(ctx.state).curl['/var/www/html' + path] = content;
         ctx.state.flags.curledLocalhost = true;
         if (path === '/index.html' && content && !content.includes('Apache2 Ubuntu Default Page')) {
           ctx.state.flags.curledCustomPage = true;
