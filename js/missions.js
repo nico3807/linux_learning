@@ -41,7 +41,6 @@ apprends à te repérer.
   2. Liste le contenu de ton dossier personnel pour découvrir
      ce qui s'y trouve.
 
-  💡 Commandes utiles : pwd, ls
   💡 Pour de l'aide sur une commande : man <commande>
   💡 Bloqué(e) ? Tape : indice`),
       indices: [
@@ -90,12 +89,11 @@ sont cachés : un simple ls ne les montre pas.
   3. Affiche le contenu du fichier caché que tu découvres
   4. Reviens dans ton dossier personnel (~)
 
-  💡 Commandes utiles : cd, ls (avec une option), cat
   💡 Le raccourci « ~ » désigne toujours ton dossier personnel.`),
       indices: [
-        `Pour changer de dossier : cd <chemin>. Tu peux descendre de deux niveaux d'un coup en séparant les dossiers par un « / ».`,
+        `Pour changer de dossier, utilise cd (« change directory ») suivi du chemin du dossier. Tu peux descendre de deux niveaux d'un coup en séparant les dossiers par un « / ».`,
         `Les fichiers cachés s'affichent avec une option de ls : une lettre précédée d'un tiret, la première de l'alphabet.`,
-        `Une fois le fichier caché repéré avec « ls -a », affiche-le avec « cat <nom_du_fichier> » (n'oublie pas le point au début du nom), puis tape « cd » tout seul pour rentrer.`,
+        `Une fois le fichier caché repéré, affiche son contenu avec cat en recopiant son nom exact (n'oublie pas le point au début du nom). Pour rentrer, donne à cd le raccourci de ton dossier personnel, ou même rien du tout.`,
       ],
       setup() {},
       check(ctx) {
@@ -125,12 +123,11 @@ des dossiers !
     ├── contenus/
     └── notes.txt
 
-  💡 Commandes utiles : mkdir, touch
   💡 Vérifie ton travail en listant le contenu de sae105.`),
       indices: [
         `« mkdir » (make directory) crée un dossier ; « touch » crée un fichier vide. Tu peux les lancer depuis ~ sans te déplacer, en donnant des chemins comme sae105/maquettes.`,
-        `Crée d'abord sae105, puis les sous-dossiers : mkdir <dossier>/<sous_dossier>. Astuce : mkdir accepte plusieurs noms d'un coup, et l'option -p crée toute la profondeur.`,
-        `Il te faut 3 créations de dossiers (mkdir) et 1 création de fichier (touch sae105/<nom_du_fichier>). Compare ensuite avec l'arborescence attendue via « ls sae105 ».`,
+        `Crée d'abord sae105, puis les sous-dossiers en donnant leur chemin (le dossier, un « / », puis le sous-dossier). Astuce : mkdir accepte plusieurs noms d'un coup, et l'option -p crée toute la profondeur.`,
+        `Il te faut 3 créations de dossiers (mkdir) et 1 création de fichier (touch), en indiquant à chaque fois le chemin qui part de sae105. Compare ensuite le contenu de sae105 avec l'arborescence attendue.`,
       ],
       setup() {},
       check(ctx) {
@@ -159,13 +156,12 @@ le dossier ~/telechargements. À toi de les ranger dans le projet !
   3. COPIE interview.mp3 dans ~/sae105/contenus
      (garde l'original dans telechargements : c'est une copie !)
 
-  💡 Commandes utiles : mv (déplacer/renommer), cp (copier)
-  💡 mv sert aussi bien à déplacer qu'à renommer :
+  💡 Déplacer et renommer, c'est la même opération :
      tout dépend du chemin de destination.`),
       indices: [
         `La syntaxe est toujours : commande <source> <destination>. Si la destination est un dossier, le fichier va dedans ; si c'est un nouveau nom, le fichier est renommé.`,
-        `Pour déplacer ET renommer en une seule commande : mv telechargements/article.txt sae105/contenus/<nouveau_nom>. Pour la copie, remplace mv par cp.`,
-        `Il te faut 4 commandes : deux mv pour les images, un mv avec le nouveau nom complet pour l'article, et un cp pour le mp3. Vérifie avec ls sae105/contenus et ls telechargements.`,
+        `mv (« move ») déplace, cp (« copy ») copie. Pour déplacer ET renommer en une seule fois, donne à mv comme destination le chemin du dossier suivi du nouveau nom.`,
+        `Il te faut 4 commandes : deux mv pour les images, un mv avec le nouveau nom complet pour l'article, et un cp pour le mp3. Vérifie ensuite le contenu de sae105/contenus et de telechargements.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -204,13 +200,12 @@ il n'y a PAS de corbeille. Supprimé = perdu pour toujours !
   3. Le dossier VIDE  archives_vides
   4. Le dossier       ancien_projet   (et tout son contenu)
 
-  💡 Commandes utiles : rm, rmdir, et une option de rm
-     pour les dossiers pleins.
-  ⚠️  Réfléchis toujours à deux fois avant un rm récursif !`),
+  ⚠️  Réfléchis toujours à deux fois avant une suppression
+     récursive !`),
       indices: [
         `rm supprime un fichier. rmdir ne supprime que les dossiers VIDES. Pour un dossier plein, rm a besoin d'une option qui veut dire « récursif ».`,
         `L'option récursive de rm est une lettre précédée d'un tiret, la même que dans « récursif ». Elle supprime le dossier ET tout ce qu'il contient.`,
-        `4 commandes : rm <fichier> (deux fois), rmdir <dossier_vide>, puis rm -r <dossier_plein>. Vérifie le résultat avec ls.`,
+        `4 suppressions : rm pour chacun des deux fichiers, rmdir pour le dossier vide, puis rm avec son option récursive pour le dossier plein. Vérifie ensuite le résultat en listant ton dossier personnel.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -252,9 +247,9 @@ il n'y a PAS de corbeille. Supprimé = perdu pour toujours !
 
   ⚠️  Attention : un > de trop et tu écrases tout !`),
       indices: [
-        `echo "..." affiche un texte. Suivi de > <fichier>, le texte part dans le fichier au lieu de l'écran.`,
-        `Première ligne : echo "<ton slogan>" > sae105/contenus/slogan.txt — Deuxième ligne : même commande mais avec >> pour ajouter sans écraser.`,
-        `Si ton fichier ne contient qu'une ligne, c'est que tu as utilisé > deux fois (il écrase). Recommence : d'abord >, puis >>. Contrôle avec cat sae105/contenus/slogan.txt.`,
+        `echo affiche le texte qu'on lui donne (entre guillemets). Suivi de > et d'un nom de fichier, le texte part dans le fichier au lieu de l'écran.`,
+        `Pour la première ligne, envoie ton slogan dans sae105/contenus/slogan.txt avec >. Pour la deuxième, même principe mais avec >> pour ajouter sans écraser.`,
+        `Si ton fichier ne contient qu'une ligne, c'est que tu as utilisé > deux fois (il écrase). Recommence : d'abord >, puis >>. Contrôle ensuite le contenu du fichier avec cat.`,
       ],
       setup() {},
       check(ctx) {
@@ -281,15 +276,11 @@ chercher À L'INTÉRIEUR des fichiers.
      mot   CODE   (cherche récursivement dans tous les fichiers)
   2. Affiche le fichier trouvé pour lire le code d'activation
   3. Enregistre le code (et seulement le code) dans le fichier
-     ~/sae105/code_serveur.txt   (avec echo et >)
-
-  💡 Commandes utiles : grep (avec une option récursive), cat, echo
-  💡 find cherche des NOMS de fichiers ;
-     grep cherche DANS le CONTENU des fichiers.`),
+     ~/sae105/code_serveur.txt   (avec echo et >)`),
       indices: [
-        `grep <motif> <cible> cherche un texte dans des fichiers. Pour fouiller tout un dossier et ses sous-dossiers, ajoute la même option récursive que rm.`,
-        `Essaie : grep -r CODE cours — la réponse t'indiquera le fichier fautif. Il ne restera qu'à le lire avec cat.`,
-        `Le code trouvé ressemble à XXXXXX-XX. Enregistre-le : echo "<le_code>" > sae105/code_serveur.txt (recopie exactement le code, tirets compris).`,
+        `grep cherche un texte (le motif) dans des fichiers : on lui donne d'abord le motif, puis l'endroit où chercher. Pour fouiller tout un dossier et ses sous-dossiers, ajoute la même option récursive que rm.`,
+        `Cherche le mot CODE, récursivement, dans le dossier cours : la réponse t'indiquera le fichier qui le contient. Il ne restera qu'à le lire avec cat.`,
+        `Le code trouvé ressemble à XXXXXX-XX. Enregistre-le dans sae105/code_serveur.txt avec echo et >, comme à la mission 6 (recopie exactement le code, tirets compris).`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -323,14 +314,11 @@ Dans une liste détaillée, les droits se lisent ainsi :
   OBJECTIFS :
   1. Regarde les droits actuels de scripts/preparation.sh
   2. Rends ce script exécutable
-  3. Exécute ce script
-
-  💡 Commandes utiles : ls -l, chmod
-  💡 chmod accepte +x, ou une notation numérique comme 755.`),
+  3. Exécute ce script`),
       indices: [
         `chmod modifie les droits. Pour AJOUTER le droit d'exécution, on utilise le signe + suivi de la lettre du droit d'exécution.`,
-        `chmod +x <fichier> rend le fichier exécutable. Vérifie ensuite avec ls -l : un « x » doit apparaître dans les droits.`,
-        `Après le chmod, lance le script en préfixant son chemin par « ./ » s'il est dans le dossier courant : ./scripts/preparation.sh (ou déplace-toi d'abord dans scripts).`,
+        `Donne au script le droit d'exécution avec chmod. Vérifie ensuite avec la liste détaillée (option -l de ls) : un « x » doit apparaître dans les droits.`,
+        `Après le chmod, lance le script en tapant simplement son chemin, précédé de « ./ » (« ici, dans le dossier courant »).`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -373,9 +361,9 @@ Sous Linux, on préfixe la commande par « sudo »
 
   ⚠️  Sans sudo, le système refusera : c'est normal, essaie !`),
       indices: [
-        `apt est le gestionnaire de paquets de Debian/Ubuntu. Deux actions t'intéressent : « update » (rafraîchir la liste) puis « install <nom_du_paquet> ».`,
+        `apt est le gestionnaire de paquets de Debian/Ubuntu. Deux actions t'intéressent : « update » (rafraîchir la liste) puis « install » suivie du nom du paquet.`,
         `N'oublie pas le préfixe sudo devant CHAQUE commande apt, sinon : permission refusée.`,
-        `Première commande : sudo apt update — puis la même structure avec install suivi du nom exact du paquet : apache2.`,
+        `L'ordre des mots compte : d'abord sudo, puis apt, puis l'action. Fais update avant install, et vérifie l'orthographe exacte du paquet : apache2.`,
       ],
       setup() {},
       check(ctx) {
@@ -403,8 +391,8 @@ la commande systemctl.
   💡 localhost = « cette machine » (127.0.0.1).`),
       indices: [
         `systemctl pilote les services : start pour démarrer, status pour l'état. Démarrer un service demande les droits admin (sudo).`,
-        `Après « sudo systemctl start apache2 », contrôle avec « systemctl status apache2 » : le service doit être « active (running) ».`,
-        `Pour le test final : curl localhost — si tout va bien, le HTML de la page par défaut d'Apache s'affiche dans le terminal.`,
+        `Après avoir démarré apache2 (avec sudo), contrôle son état avec l'action status : le service doit être « active (running) ».`,
+        `Pour le test final, donne à curl l'adresse localhost : si tout va bien, le HTML de la page par défaut d'Apache s'affiche dans le terminal.`,
       ],
       setup() {},
       check(ctx) {
@@ -439,7 +427,7 @@ qui appartient à root : il faudra sudo pour y écrire.
       indices: [
         `Le fichier appartient à root : sans sudo, nano refusera d'enregistrer. Préfixe bien la commande.`,
         `Dans nano, écris une vraie petite page : au minimum une balise <h1> avec un titre, et le mot MMI dans le texte. Puis Ctrl+O pour enregistrer et Ctrl+X pour sortir.`,
-        `Après l'enregistrement, tape « curl localhost » : tu dois voir TON code HTML (avec ton <h1>) et non plus la page par défaut d'Apache.`,
+        `Après l'enregistrement, interroge de nouveau localhost avec curl : tu dois voir TON code HTML (avec ton <h1>) et non plus la page par défaut d'Apache.`,
       ],
       setup() {},
       check(ctx) {
@@ -468,13 +456,12 @@ juste ce qu'il faut.
   2. Affiche les 3 DERNIÈRES lignes (les jours les plus récents)
   3. Compte le nombre de lignes du fichier
 
-  💡 Commandes utiles : head, tail, wc (avec leurs options -n / -l)
   💡 Bonus : le pipe « | » envoie le résultat d'une commande
      à la commande suivante.`),
       indices: [
         `Trois commandes : « head » affiche le début d'un fichier, « tail » la fin, « wc » compte (word count). Chacune prend le chemin du fichier en argument.`,
-        `L'option -n règle le nombre de lignes de head et tail : head -n 5 <fichier>. Pour ne compter que les lignes avec wc, utilise l'option -l.`,
-        `Les trois commandes à lancer ont la forme : head -n 5 sae105/<fichier>, tail -n 3 sae105/<fichier>, wc -l sae105/<fichier>.`,
+        `L'option -n, suivie d'un nombre, règle le nombre de lignes affichées par head et tail. Pour ne compter que les lignes avec wc, utilise l'option -l.`,
+        `Le fichier s'appelle stats_visites.txt et se trouve dans sae105 : lance sur ce chemin head (5 lignes), tail (3 lignes), puis wc (lignes seulement).`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -509,12 +496,12 @@ le travail de la commande find.
      (find accepte les jokers :  "*.png")
   2. Déplace logo_final.png dans   ~/sae105/maquettes
 
-  💡 Le résultat de find te donne le chemin complet : parfait
-     pour le réutiliser dans ton mv !`),
+  💡 Le résultat de la recherche te donne le chemin complet :
+     parfait pour le réutiliser ensuite !`),
       indices: [
-        `find <dossier> -name "*.png" explore le dossier ET tous ses sous-dossiers. Les guillemets autour du motif sont importants.`,
-        `Lance : find projet_v2 -name "*.png" — parmi les résultats, repère le chemin complet de logo_final.png.`,
-        `Recopie le chemin donné par find comme source de ton mv : mv projet_v2/<sous_dossier>/logo_final.png sae105/maquettes`,
+        `find explore un dossier ET tous ses sous-dossiers : on lui donne d'abord le dossier de départ, puis l'option -name suivie du motif. Les guillemets autour du motif sont importants.`,
+        `Pars du dossier projet_v2 avec le motif "*.png" : parmi les résultats, repère le chemin complet de logo_final.png.`,
+        `Recopie le chemin donné par find comme source de ton mv (vu à la mission 4), avec sae105/maquettes comme destination.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -552,7 +539,7 @@ ligne, mais pour un vrai texte, on ouvre un éditeur : nano.
 
   💡 nano crée le fichier s'il n'existe pas encore.`),
       indices: [
-        `La commande a la forme : nano sae105/contenus/<nom_du_fichier>. Une fenêtre d'édition s'ouvre par-dessus le terminal.`,
+        `Donne à nano le chemin du fichier en partant de ton dossier personnel (sae105/contenus/...). Une fenêtre d'édition s'ouvre par-dessus le terminal.`,
         `Écris au moins 3 lignes (appuie sur Entrée pour changer de ligne) et glisse le mot MMI dans ton texte, puis bouton « Enregistrer » et « Quitter ».`,
         `Si la mission ne se valide pas : vérifie avec cat que le fichier contient bien 3 lignes non vides ET le mot MMI, puis rouvre-le avec nano pour compléter.`,
       ],
@@ -589,8 +576,8 @@ NUMÉRIQUE : 3 chiffres pour propriétaire / groupe / autres.
   2. Contrôle le résultat avec ls -l`),
       indices: [
         `Additionne pour chaque catégorie : lecture+écriture = 4+2 = 6 ; lecture+exécution = 4+1 = 5 ; tout = 7 ; rien = 0.`,
-        `Le fichier confidentiel doit finir en -rw------- et le script en -rwxr-xr-x (vérifie avec ls -l sae105 et ls -l scripts).`,
-        `Les deux commandes : chmod 600 sae105/notes_jury.txt puis chmod 755 scripts/partage.sh`,
+        `Le fichier confidentiel doit finir en -rw------- et le script en -rwxr-xr-x (vérifie avec la liste détaillée de chaque dossier).`,
+        `Avec chmod, donne d'abord les 3 chiffres, puis le chemin du fichier : 600 pour les notes du jury, 755 pour le script de partage.`,
       ],
       setup(ctx) {
         const { fs } = ctx;
@@ -628,9 +615,9 @@ publie sur le web.
   💡 Les fichiers de /etc appartiennent à root, mais ils sont
      LISIBLES par tout le monde : pas besoin de sudo pour lire.`),
       indices: [
-        `grep <motif> <fichier> affiche les lignes contenant le motif. Ici le motif est DocumentRoot et le fichier est /etc/apache2/apache2.conf.`,
+        `grep affiche les lignes d'un fichier qui contiennent un motif : on lui donne d'abord le motif, puis le fichier. Ici le motif est DocumentRoot et le fichier est /etc/apache2/apache2.conf.`,
         `La ligne trouvée ressemble à « DocumentRoot /chemin/vers/dossier » : c'est ce chemin qu'il faut recopier.`,
-        `Termine avec : echo "<le_chemin_trouvé>" > sae105/docroot.txt — le chemin commence par /var/...`,
+        `Enregistre ce chemin dans sae105/docroot.txt avec echo et >, comme le code de la mission 7. Le chemin commence par /var/...`,
       ],
       setup() {},
       check(ctx) {
@@ -661,8 +648,8 @@ localhost/equipe.html !
   💡 Exemple minimal :  <h2>L'équipe MMI</h2>`),
       indices: [
         `Comme pour l'accueil (mission 11) : le dossier appartient à root, donc l'éditeur doit être ouvert avec le préfixe administrateur.`,
-        `sudo nano /var/www/html/equipe.html — écris ta page avec une balise <h2>, enregistre, quitte.`,
-        `Le test final : curl localhost/equipe.html — tu dois voir TON code HTML. Si « 404 Not Found » : vérifie le nom exact du fichier avec ls /var/www/html.`,
+        `Ouvre /var/www/html/equipe.html dans nano avec sudo, écris ta page avec une balise <h2>, enregistre, quitte.`,
+        `Pour le test final, donne à curl l'adresse localhost/equipe.html : tu dois voir TON code HTML. Si « 404 Not Found » : vérifie le nom exact du fichier en listant /var/www/html.`,
       ],
       setup() {},
       check(ctx) {
@@ -694,8 +681,8 @@ exécutable. Un dernier défi à la hauteur de tes nouveaux talents.
      (Missions 8 et 9, si un doute persiste...)`),
       indices: [
         `Deux étapes, déjà vues : d'abord donner le droit d'exécution au script (mission 8), ensuite le lancer avec les droits admin (mission 9).`,
-        `chmod +x scripts/validation_finale.sh — puis exécute-le avec le préfixe sudo ET le « ./ » devant le chemin.`,
-        `La commande finale complète a cette forme : sudo ./scripts/<nom_du_script>. Si « Permission non accordée » : le chmod n'a pas été fait ; si « commande introuvable » : il manque le ./`,
+        `Donne d'abord le droit d'exécution au script avec chmod, comme à la mission 8, puis exécute-le avec le préfixe sudo ET le « ./ » devant le chemin.`,
+        `Pour le lancer : sudo, une espace, puis le chemin du script précédé de « ./ ». Si « Permission non accordée » : le chmod n'a pas été fait ; si « commande introuvable » : il manque le ./`,
       ],
       setup(ctx) {
         const { fs } = ctx;
