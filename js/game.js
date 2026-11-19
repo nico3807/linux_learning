@@ -130,10 +130,8 @@ const Game = (() => {
       fs.writeFile(`${HOME}/README.txt`,
         `Bienvenue sur le serveur d'entraînement du département MMI ! 🎓
 
-Ta première mission t'attend dans le dossier « missions ».
-Affiche-la avec :
-
-    cat missions/mission_01.txt
+Ta première mission t'attend dans le dossier « missions » :
+lis le fichier nommé mission_01.txt.
 
 Rappels utiles à tout moment :
   aide         → liste des commandes disponibles
@@ -161,7 +159,7 @@ Rappels utiles à tout moment :
       if (!silentIntro) {
         this.ui.print('', null);
         this.ui.print(`📬 Nouvelle mission débloquée : « ${m.titre} »`, 'mission');
-        this.ui.print(`   Lis les consignes avec :  cat ${p}`, 'mission');
+        this.ui.print(`   Lis les consignes dans le fichier ${p}`, 'mission');
       }
       this.ui.onStateChange && this.ui.onStateChange();
     }
@@ -284,7 +282,7 @@ Rappels utiles à tout moment :
       const m = this.currentMission();
       if (!m || this.finished) { ctx.sink.line('🎉 Toutes les missions sont terminées !', 'success'); return; }
       ctx.sink.line(`Mission en cours : n°${m.id} — ${m.titre}`, 'mission');
-      ctx.sink.line(`Consignes complètes :  cat ${V.pretty(m.fichier)}`, 'mission');
+      ctx.sink.line(`Consignes complètes dans le fichier ${V.pretty(m.fichier)}`, 'mission');
     }
 
     showProgress(ctx) {
@@ -365,7 +363,7 @@ Rappels utiles à tout moment :
       const who = this.player ? ` — ${this.player.prenom} ${this.player.nom.toUpperCase()}` : '';
       this.ui.print(`Session ouverte : etudiant@serveur-mmi${who}`, 'info');
       this.ui.print('', null);
-      this.ui.print('Pour commencer, lis le fichier d\'accueil :  cat README.txt', 'mission');
+      this.ui.print('Pour commencer, lis le fichier d\'accueil nommé README.txt', 'mission');
       this.ui.print('', null);
     }
 

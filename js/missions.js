@@ -91,7 +91,7 @@ sont cachés : un simple ls ne les montre pas.
   4. Reviens dans ton dossier personnel (~)
 
   💡 Commandes utiles : cd, ls (avec une option), cat
-  💡 « cd » tout seul (ou « cd ~ ») ramène toujours à la maison.`),
+  💡 Le raccourci « ~ » désigne toujours ton dossier personnel.`),
       indices: [
         `Pour changer de dossier : cd <chemin>. Tu peux descendre de deux niveaux d'un coup en séparant les dossiers par un « / ».`,
         `Les fichiers cachés s'affichent avec une option de ls : une lettre précédée d'un tiret, la première de l'alphabet.`,
@@ -126,7 +126,7 @@ des dossiers !
     └── notes.txt
 
   💡 Commandes utiles : mkdir, touch
-  💡 Vérifie ton travail avec : ls sae105`),
+  💡 Vérifie ton travail en listant le contenu de sae105.`),
       indices: [
         `« mkdir » (make directory) crée un dossier ; « touch » crée un fichier vide. Tu peux les lancer depuis ~ sans te déplacer, en donnant des chemins comme sae105/maquettes.`,
         `Crée d'abord sae105, puis les sous-dossiers : mkdir <dossier>/<sous_dossier>. Astuce : mkdir accepte plusieurs noms d'un coup, et l'option -p crée toute la profondeur.`,
@@ -250,7 +250,6 @@ il n'y a PAS de corbeille. Supprimé = perdu pour toujours !
   3. Vérifie le résultat avec cat : le fichier doit contenir
      au moins 2 lignes.
 
-  💡 Exemple de forme : echo "mon texte" > chemin/fichier.txt
   ⚠️  Attention : un > de trop et tu écrases tout !`),
       indices: [
         `echo "..." affiche un texte. Suivi de > <fichier>, le texte part dans le fichier au lieu de l'écran.`,
@@ -317,14 +316,14 @@ chercher À L'INTÉRIEUR des fichiers.
 ~/scripts. Problème : impossible de le lancer ! Sous Linux,
 un fichier ne s'exécute que s'il a le droit « x » (exécution).
 
-Observe les droits avec :   ls -l scripts
+Dans une liste détaillée, les droits se lisent ainsi :
   -rw-r--r--  →  lecture/écriture, mais PAS exécutable
   -rwxr-xr-x  →  exécutable ✔
 
   OBJECTIFS :
   1. Regarde les droits actuels de scripts/preparation.sh
   2. Rends ce script exécutable
-  3. Exécute-le :   ./scripts/preparation.sh
+  3. Exécute ce script
 
   💡 Commandes utiles : ls -l, chmod
   💡 chmod accepte +x, ou une notation numérique comme 755.`),
@@ -372,7 +371,6 @@ Sous Linux, on préfixe la commande par « sudo »
   2. Installe le paquet   apache2
      (commande apt, action « install », avec sudo)
 
-  💡 Forme générale : sudo apt <action> [paquet]
   ⚠️  Sans sudo, le système refusera : c'est normal, essaie !`),
       indices: [
         `apt est le gestionnaire de paquets de Debian/Ubuntu. Deux actions t'intéressent : « update » (rafraîchir la liste) puis « install <nom_du_paquet> ».`,
@@ -402,7 +400,6 @@ la commande systemctl.
      la commande curl permet d'interroger une URL —
      essaie sur   localhost
 
-  💡 Forme générale : sudo systemctl <action> <service>
   💡 localhost = « cette machine » (127.0.0.1).`),
       indices: [
         `systemctl pilote les services : start pour démarrer, status pour l'état. Démarrer un service demande les droits admin (sudo).`,
@@ -427,12 +424,13 @@ qui appartient à root : il faudra sudo pour y écrire.
 
   OBJECTIFS :
   1. Ouvre /var/www/html/index.html dans l'éditeur nano
-     (avec sudo !) :   sudo nano /var/www/html/index.html
+     (avec sudo !)
   2. Remplace le contenu par ta propre page HTML. Elle doit
      contenir au moins :
         - un titre principal  <h1> ... </h1>
         - le mot   MMI   quelque part
-  3. Enregistre, quitte nano, puis vérifie avec curl localhost
+  3. Enregistre, quitte nano, puis interroge à nouveau ton
+     serveur (localhost) pour vérifier qu'il renvoie TA page
 
   💡 Dans nano : Ctrl+O (ou bouton) = enregistrer,
      Ctrl+X = quitter.
@@ -471,8 +469,8 @@ juste ce qu'il faut.
   3. Compte le nombre de lignes du fichier
 
   💡 Commandes utiles : head, tail, wc (avec leurs options -n / -l)
-  💡 Bonus : les pipes enchaînent les commandes,
-     ex :  cat fichier | wc -l`),
+  💡 Bonus : le pipe « | » envoie le résultat d'une commande
+     à la commande suivante.`),
       indices: [
         `Trois commandes : « head » affiche le début d'un fichier, « tail » la fin, « wc » compte (word count). Chacune prend le chemin du fichier en argument.`,
         `L'option -n règle le nombre de lignes de head et tail : head -n 5 <fichier>. Pour ne compter que les lignes avec wc, utilise l'option -l.`,
@@ -511,7 +509,6 @@ le travail de la commande find.
      (find accepte les jokers :  "*.png")
   2. Déplace logo_final.png dans   ~/sae105/maquettes
 
-  💡 Forme générale : find <dossier> -name "motif"
   💡 Le résultat de find te donne le chemin complet : parfait
      pour le réutiliser dans ton mv !`),
       indices: [
@@ -553,7 +550,7 @@ ligne, mais pour un vrai texte, on ouvre un éditeur : nano.
   3. Enregistre (Ctrl+O ou bouton) et quitte (Ctrl+X)
   4. Vérifie ton œuvre avec cat
 
-  💡 nano <chemin/fichier> crée le fichier s'il n'existe pas.`),
+  💡 nano crée le fichier s'il n'existe pas encore.`),
       indices: [
         `La commande a la forme : nano sae105/contenus/<nom_du_fichier>. Une fenêtre d'édition s'ouvre par-dessus le terminal.`,
         `Écris au moins 3 lignes (appuie sur Entrée pour changer de ligne) et glisse le mot MMI dans ton texte, puis bouton « Enregistrer » et « Quitter ».`,
@@ -589,9 +586,7 @@ NUMÉRIQUE : 3 chiffres pour propriétaire / groupe / autres.
 
   OBJECTIFS :
   1. Applique les bons droits numériques à ces deux fichiers
-  2. Contrôle le résultat avec ls -l
-
-  💡 Forme : chmod <3 chiffres> <fichier>`),
+  2. Contrôle le résultat avec ls -l`),
       indices: [
         `Additionne pour chaque catégorie : lecture+écriture = 4+2 = 6 ; lecture+exécution = 4+1 = 5 ; tout = 7 ; rien = 0.`,
         `Le fichier confidentiel doit finir en -rw------- et le script en -rwxr-xr-x (vérifie avec ls -l sae105 et ls -l scripts).`,
@@ -619,7 +614,7 @@ NUMÉRIQUE : 3 chiffres pour propriétaire / groupe / autres.
       id: 16,
       titre: 'Explorer la configuration du serveur',
       fichier: `${H}/missions/mission_16.txt`,
-      texte: box('MISSION 16 — LA CONFIGURATION D\'APACHE', `D'où sort cette page quand on tape curl localhost ? Apache lit sa
+      texte: box('MISSION 16 — LA CONFIGURATION D\'APACHE', `D'où sort cette page quand on interroge localhost ? Apache lit sa
 configuration dans /etc/apache2/apache2.conf. On y trouve
 notamment la directive DocumentRoot : le dossier que le serveur
 publie sur le web.
@@ -657,10 +652,10 @@ page web : /var/www/html/equipe.html sera servie à l'adresse
 localhost/equipe.html !
 
   OBJECTIFS :
-  1. Crée la page   /var/www/html/equipe.html   (sudo nano !)
+  1. Crée la page   /var/www/html/equipe.html   avec nano
      Elle doit contenir au moins un sous-titre <h2> ... </h2>
-  2. Vérifie qu'elle est bien en ligne :
-     curl localhost/equipe.html
+  2. Vérifie qu'elle est bien en ligne à l'adresse
+     localhost/equipe.html
 
   💡 Rappel : /var/www/html appartient à root...
   💡 Exemple minimal :  <h2>L'équipe MMI</h2>`),
@@ -693,8 +688,7 @@ exécutable. Un dernier défi à la hauteur de tes nouveaux talents.
 
   OBJECTIFS :
   1. Rends exécutable   ~/scripts/validation_finale.sh
-  2. Exécute-le en tant qu'administrateur :
-     sudo ./scripts/validation_finale.sh
+  2. Exécute-le en tant qu'administrateur
 
   💡 Tout ce qu'il faut savoir, tu l'as déjà appris.
      (Missions 8 et 9, si un doute persiste...)`),
